@@ -1,0 +1,8 @@
+{
+  "layout": {
+    "canvasSize":     [600, 600],
+    "chartSize":      [600, 500],
+    "navigationSize": [600, 80],
+    "popupSize":      [80, 40]
+  }
+}
