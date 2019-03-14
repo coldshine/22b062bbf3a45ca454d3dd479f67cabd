@@ -33,7 +33,7 @@ export default class {
   _drawGridX(ctx, hideLines = false) {
     const step = this.xValuesPerMarker;
     for (let xValue = this.minX; xValue <= this.maxX; xValue += step) {
-      const [fromX, fromY] = this.converter.convertCoordsToPx(xValue, this.minY);
+      const [fromX, fromY] = this.converter.coordsToPixel(xValue, this.minY);
       if (!hideLines) {
         this._drawVerticalGridLine(ctx, xValue)
       }
@@ -44,21 +44,21 @@ export default class {
   _drawGridY(ctx) {
     const step = this.yValuesPerMarker;
     for (let yValue = this.minY; yValue <= this.maxY; yValue += step) {
-      const [fromX, fromY] = this.converter.convertCoordsToPx(this.minX, yValue);
+      const [fromX, fromY] = this.converter.coordsToPixel(this.minX, yValue);
       this._drawHorizontalGridLine(ctx, yValue);
       this._drawGridText(ctx, yValue, fromX, fromY);
     }
   }
 
   _drawHorizontalGridLine(ctx, y) {
-    const [fromX, fromY] = this.converter.convertCoordsToPx(this.minX, y);
-    const [toX, toY] = this.converter.convertCoordsToPx(this.maxX, y);
+    const [fromX, fromY] = this.converter.coordsToPixel(this.minX, y);
+    const [toX, toY] = this.converter.coordsToPixel(this.maxX, y);
     this._drawGridLine(ctx, fromX, fromY, toX, toY);
   }
 
   _drawVerticalGridLine(ctx, x) {
-    const [fromX, fromY] = this.converter.convertCoordsToPx(x, this.minY);
-    const [toX, toY] = this.converter.convertCoordsToPx(x, this.maxY);
+    const [fromX, fromY] = this.converter.coordsToPixel(x, this.minY);
+    const [toX, toY] = this.converter.coordsToPixel(x, this.maxY);
     this._drawGridLine(ctx, fromX, fromY, toX, toY);
   }
 

@@ -1,5 +1,5 @@
-import Config from './config';
-import Utils from './utils';
+import Config from '../../json/config';
+import Utils from '../utils';
 
 export default class {
 
@@ -18,16 +18,22 @@ export default class {
   }
 
   draw(ctx, selectedValueX) {
-    const [x, y] = this.converter.convertCoordsToPx(this.charts[0].selectedValueX, 0);
-    const [popupWidth, popupHeight] = Config.layout.popupSize;
+    const [x, y] = this.converter.coordsToPixel(this.charts[0].selectedValueX, 0);
+    this._drawSquare(ctx, x);
+    this._drawText(ctx, x, selectedValueX);
+  }
 
+  _drawSquare(ctx, x) {
+    const [popupWidth, popupHeight] = Config.layout.popupSize;
     ctx.strokeStyle = '#bdbdbd';
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.rect(x - popupWidth / 2, 10, popupWidth, popupHeight);
     ctx.stroke();
     ctx.fill();
+  }
 
+  _drawText(ctx, x, selectedValueX) {
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#000';
     ctx.fillText(selectedValueX, x, 20);

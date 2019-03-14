@@ -23,4 +23,4 @@ Array.prototype.findClosestValue = function (search) {
   return this[sorted.indexOf(min)]
 };
 
-import './app';
+import './classes/app';

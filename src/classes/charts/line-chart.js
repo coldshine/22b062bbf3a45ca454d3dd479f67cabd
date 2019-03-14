@@ -1,4 +1,4 @@
-import Utils from './utils';
+import Utils from '../utils';
 
 export default class {
 
@@ -35,7 +35,7 @@ export default class {
     for (let i = 0; i < this.data.valuesX.length - 1; i++) {
       const valueX = this.data.valuesX[i];
       const valueY = this.data.valuesY[i];
-      const [x, y] = this.converter.convertCoordsToPx(valueX, valueY);
+      const [x, y] = this.converter.coordsToPixel(valueX, valueY);
       ctx.lineTo(x, y);
     }
     ctx.stroke();
@@ -44,7 +44,7 @@ export default class {
   _drawSelected(ctx) {
     const valueX = this.selectedValueX;
     const valueY = this.selectedValueY;
-    const [x, y] = this.converter.convertCoordsToPx(valueX, valueY);
+    const [x, y] = this.converter.coordsToPixel(valueX, valueY);
 
     ctx.strokeStyle = this.data.color;
     ctx.fillStyle = '#ffffff';
