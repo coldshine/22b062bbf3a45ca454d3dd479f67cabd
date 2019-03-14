@@ -20,4 +20,9 @@ export default class {
     const max = array[array.length - 1];
     return [min, max]
   }
+
+  static isMouseInsideLayout(mouseX, mouseY, layout) {
+    const {width, height, offsetTop, offsetLeft} = layout;
+    return mouseX.between(offsetLeft, offsetLeft + width) && mouseY.between(offsetTop, offsetTop + height);
+  }
 }

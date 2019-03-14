@@ -1,4 +1,5 @@
 import Config from '../../json/config';
+import Utils from '../utils';
 import Grid from '../grid';
 import Charts from '../charts';
 import Tooltip from './tooltip-view';
@@ -29,8 +30,7 @@ export default class {
   }
 
   onMouseMove(mouseX, mouseY) {
-    const {width, height, offsetTop, offsetLeft} = Config.layout.main;
-    if (mouseX.between(offsetLeft, offsetLeft + width) && mouseY.between(offsetTop, offsetTop + height)) {
+    if (Utils.isMouseInsideLayout(mouseX, mouseY, Config.layout.main)) {
       this.selectedValueX = this.converter.pxToValueX(mouseX);
       this.selectedValueIndex = this.converter.valuesX.indexOf(this.selectedValueX);
     } else {
