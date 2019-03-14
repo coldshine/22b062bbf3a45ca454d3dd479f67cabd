@@ -32,7 +32,7 @@ export default class {
 
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    for (let i = 0; i < this.data.valuesX.length - 1; i++) {
+    for (let i = 0; i < this.data.valuesCount; i++) {
       const valueX = this.data.valuesX[i];
       const valueY = this.data.valuesY[i];
       const [x, y] = this.converter.coordsToPixel(valueX, valueY);

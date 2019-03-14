@@ -8,18 +8,22 @@ import store from '../../redux/store';
 export default class {
 
   constructor(chartsData) {
-    const {minX, maxX} = store.getState();
+    const {minX, maxX, mouseX, mouseY} = store.getState();
+
+    this.minX = minX;
+    this.maxX = maxX;
+    this.mouseX = mouseX;
+    this.mouseY = mouseY;
+
     this.chartsFactory = new Charts(chartsData, Config.layout.main);
     this.chartsFactory.reduceValuesByX(minX, maxX);
 
-    const converter = this.chartsFactory.getConverter();
-    const charts = this.chartsFactory.getCharts();
+    this.converter = this.chartsFactory.getConverter();
+    this.charts = this.chartsFactory.getCharts();
 
-    this.grid = new Grid(converter);
-    this.tooltip = new Tooltip(charts, converter);
+    this.grid = new Grid(this.converter);
+    this.tooltip = new Tooltip(this.charts, this.converter);
 
-    this.converter = converter;
-    this.charts = charts;
     this.selectedValueX = null;
     this.selectedValueIndex = null;
 
@@ -34,30 +38,44 @@ export default class {
 
   onStoreUpdate() {
     const {mouseX, mouseY, minX, maxX} = store.getState();
-    this.handleMouseMove(mouseX, mouseY);
-    this.handleVisibleRangeUpdate(minX, maxX);
+    if (this.isMousePositionChanged(mouseX, mouseY)) {
+      this.handleMouseMove(mouseX, mouseY);
+      }
+    if (this.isVisibleRangeChanged(minX, maxX)) {
+      this.handleVisibleRangeUpdate(minX, maxX);
+    }
   }
 
   handleMouseMove(mouseX, mouseY) {
     if (Utils.isMouseInsideLayout(mouseX, mouseY, Config.layout.main)) {
-      this.selectedValueX = this.converter.pxToValueX(mouseX);
+      this.selectedValueX = this.converter.pixelToValueX(mouseX);
       this.selectedValueIndex = this.converter.valuesX.indexOf(this.selectedValueX);
     } else {
       this.reset();
     }
+    this.mouseX = mouseX;
+    this.mouseY = mouseY;
   }
 
   handleVisibleRangeUpdate(minX, maxX) {
     this.chartsFactory.reduceValuesByX(minX, maxX);
 
-    const converter = this.chartsFactory.getConverter();
-    const charts = this.chartsFactory.getCharts();
+    this.converter = this.chartsFactory.getConverter();
+    this.charts = this.chartsFactory.getCharts();
 
-    this.grid = new Grid(converter);
-    this.tooltip = new Tooltip(charts, converter);
+    this.grid = new Grid(this.converter);
+    this.tooltip = new Tooltip(this.charts, this.converter);
 
-    this.converter = converter;
-    this.charts = charts;
+    this.minX = minX;
+    this.maxX = maxX;
+  }
+
+  isVisibleRangeChanged(minX, maxX) {
+    return this.minX !== minX || this.maxX !== maxX;
+  }
+
+  isMousePositionChanged(mouseX, mouseY) {
+    return this.mouseX !== mouseX || this.mouseY !== mouseY;
   }
 
   reset() {

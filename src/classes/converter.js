@@ -19,15 +19,24 @@ export default class {
   }
 
   coordsToPixel(x, y) {
-    y = this.maxY - y; // y should be inverted since order is from the bottom to the top
     return [
-      this.coordToPixel(x, this.minX, this.deltaX, this.layout.width, this.layout.offsetLeft),
-      this.coordToPixel(y, this.minY, this.deltaY, this.layout.height, this.layout.offsetTop),
+      this.valueXToPixel(x),
+      this.valueYToPixel(y),
     ]
   }
 
-  pxToValueX(x) {
-    return this.pxToCoords(x, this.minX, this.deltaX, this.valuesX, this.layout.width);
+  valueXToPixel(x) {
+    return this.coordToPixel(x, this.minX, this.deltaX, this.layout.width, this.layout.offsetLeft);
+  }
+
+  valueYToPixel(y) {
+    y = this.maxY - y; // y should be inverted since order is from the bottom to the top
+    return this.coordToPixel(y, this.minY, this.deltaY, this.layout.height, this.layout.offsetTop);
+  }
+
+  pixelToValueX(x) {
+    const coords = this.pixelToCoord(x, this.minX, this.deltaX, this.layout.width);
+    return this.valuesX.findClosestValue(coords); // since chart value is discreet we have to find the exact chart value by pixel position and the look for real closest chart value;
   }
 
   /**
@@ -42,9 +51,8 @@ export default class {
   /**
    * Converts pixel position (x or y) to chart one coordinate
    */
-  pxToCoords(px, minValue, delta, values, maxPx) {
+  pixelToCoord(px, minValue, delta, maxPx) {
     const pc = px / maxPx; // percents
-    const localValue = Math.round(pc * delta);
-    return values.findClosestValue(localValue + minValue); // since chart value is discreet we have to find the exact chart value by pixel position and the look for real closest chart value;
+    return Math.round(pc * delta) + minValue; // value
   }
 }

@@ -5,8 +5,12 @@ import store from '../../redux/store';
 export default class {
 
   constructor(chartsData) {
+    const {minX, maxX} = store.getState();
     const chartsFactory = new Charts(chartsData, Config.layout.navigation);
     this.charts = chartsFactory.getCharts();
+    this.converter = chartsFactory.getConverter();
+    this.rangeFromPx = this.converter.valueXToPixel(minX);
+    this.rangeToPx = this.converter.valueXToPixel(maxX);
   }
 
   draw(ctx) {
@@ -16,18 +20,16 @@ export default class {
 
   drawHandler(ctx) {
     const width = Config.layout.navigation.width;
-    const halfWidth = width / 2;
     let offsetLeft = Config.layout.navigation.offsetLeft;
-    const transparentPartWidth = 100;
     this.drawHandlerPart(
       ctx,
       offsetLeft,
-      halfWidth
+      this.rangeFromPx
     );
     this.drawHandlerPart(
       ctx,
-      offsetLeft + halfWidth + transparentPartWidth,
-      width - halfWidth - transparentPartWidth,
+      offsetLeft + this.rangeToPx,
+      width - this.rangeToPx,
     );
   }
 

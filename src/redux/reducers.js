@@ -1,8 +1,8 @@
 import { UPDATE_VISIBLE_RANGE, UPDATE_MOUSE_POSITION } from './actions';
 
 const initialState = {
-  minX: 1546905600000,
-  maxX: 1552003200000,
+  minX: 1549324800000,
+  maxX: 1549843200000,
   mouseX: -1,
   mouseY: -1,
 };

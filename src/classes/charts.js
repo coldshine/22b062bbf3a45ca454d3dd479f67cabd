@@ -42,6 +42,7 @@ class ChartDataFormatter {
       type: this.chartData.types[chartKey],
       color: this.chartData.colors[chartKey],
       name: this.chartData.names[chartKey],
+      valuesCount: this.getAllValuesX().length,
       valuesX: this.getAllValuesX(),
       valuesY: this.getValuesInColumn(chartKey),
     };
@@ -53,9 +54,9 @@ class ChartDataFormatter {
   }
 
   reduceValuesTo(minValueIndex, maxValueIndex) {
-    this.chartData.columns.forEach((column) => {
-      column.slice(minValueIndex, maxValueIndex);
-    })
+    this.chartData.columns = this.chartData.columns.map((column) => {
+      return [column[0]].concat(column.slice(minValueIndex, maxValueIndex));
+    });
   }
 
   getIndicesByValuesX(minX, maxX) {
@@ -104,13 +105,16 @@ class ChartsFactory {
 export default class {
 
   constructor(chartData, layout) {
-    this.dataFormatter = new ChartDataFormatter(chartData);
-    this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), layout);
+    this.layout = layout;
+    this.dataFormatter = new ChartDataFormatter(Object.assign({}, chartData));
+    this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), this.layout);
     this.chartsFactory = new ChartsFactory(this.dataFormatter.getFormattedData(), this.converter);
   }
 
   reduceValuesByX(minX, maxX) {
     this.dataFormatter.reduceValuesByX(minX, maxX);
+    this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), this.layout);
+    this.chartsFactory = new ChartsFactory(this.dataFormatter.getFormattedData(), this.converter);
   }
 
   getConverter() {
