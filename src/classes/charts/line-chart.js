@@ -1,4 +1,5 @@
 import Utils from '../utils';
+import { ctx } from '../canvas';
 
 export default class {
 
@@ -16,16 +17,16 @@ export default class {
     this.selectedValueY = null;
   }
 
-  draw(ctx, selectedValueX = null, selectedValueIndex = null) {
-    this._drawLine(ctx);
+  draw(selectedValueX = null, selectedValueIndex = null) {
+    this._drawLine();
     if (selectedValueX && selectedValueIndex) {
       this.selectedValueX = selectedValueX;
       this.selectedValueY = this.data.valuesY[selectedValueIndex];
-      this._drawSelected(ctx);
+      this._drawSelected();
     }
   }
 
-  _drawLine(ctx) {
+  _drawLine() {
 
     ctx.lineWidth = 2;
     ctx.strokeStyle = this.data.color;
@@ -41,7 +42,7 @@ export default class {
     ctx.stroke();
   }
 
-  _drawSelected(ctx) {
+  _drawSelected() {
     const valueX = this.selectedValueX;
     const valueY = this.selectedValueY;
     const [x, y] = this.converter.coordsToPixel(valueX, valueY);

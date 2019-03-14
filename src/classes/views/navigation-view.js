@@ -1,3 +1,4 @@
+import { ctx } from '../canvas';
 import Config from '../../json/config';
 import Charts from '../charts';
 import store from '../../redux/store';
@@ -11,29 +12,32 @@ export default class {
     this.converter = chartsFactory.getConverter();
     this.rangeFromPx = this.converter.valueXToPixel(minX);
     this.rangeToPx = this.converter.valueXToPixel(maxX);
+    this.bindEvents();
   }
 
-  draw(ctx) {
-    this.charts.forEach((chart) => chart.draw(ctx));
-    this.drawHandler(ctx);
+  bindEvents() {
+
   }
 
-  drawHandler(ctx) {
+  draw() {
+    this.charts.forEach((chart) => chart.draw());
+    this.drawHandler();
+  }
+
+  drawHandler() {
     const width = Config.layout.navigation.width;
     let offsetLeft = Config.layout.navigation.offsetLeft;
     this.drawHandlerPart(
-      ctx,
       offsetLeft,
       this.rangeFromPx
     );
     this.drawHandlerPart(
-      ctx,
       offsetLeft + this.rangeToPx,
       width - this.rangeToPx,
     );
   }
 
-  drawHandlerPart(ctx, offsetLeft, width) {
+  drawHandlerPart(offsetLeft, width) {
     ctx.fillStyle = 'rgba(234,255,221,0.5)';
     ctx.beginPath();
     ctx.rect(

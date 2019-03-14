@@ -30,10 +30,10 @@ export default class {
     store.subscribe(() => this.onStoreUpdate())
   }
 
-  draw(ctx) {
-    this.grid.draw(ctx, this.selectedValueX);
-    this.charts.forEach((chart) => chart.draw(ctx, this.selectedValueX, this.selectedValueIndex));
-    this.tooltip.draw(ctx, this.selectedValueX);
+  draw() {
+    this.grid.draw(this.selectedValueX);
+    this.charts.forEach((chart) => chart.draw(this.selectedValueX, this.selectedValueIndex));
+    this.tooltip.draw(this.selectedValueX);
   }
 
   onStoreUpdate() {

@@ -1,5 +1,5 @@
 import Config from '../../json/config';
-import Utils from '../utils';
+import { ctx } from '../canvas';
 
 export default class {
 
@@ -16,15 +16,15 @@ export default class {
     this.deltaY = converter.deltaY;
   }
 
-  draw(ctx, selectedValueX) {
+  draw(selectedValueX) {
     const [x, y] = this.converter.coordsToPixel(this.charts[0].selectedValueX, 0);
     if (selectedValueX) {
-      this._drawSquare(ctx, x);
-      this._drawText(ctx, x, selectedValueX);
+      this._drawSquare(x);
+      this._drawText(x, selectedValueX);
     }
   }
 
-  _drawSquare(ctx, x) {
+  _drawSquare(x) {
     const {width, height, offsetTop} = Config.layout.tooltip;
     ctx.strokeStyle = '#bdbdbd';
     ctx.fillStyle = '#ffffff';
@@ -34,7 +34,7 @@ export default class {
     ctx.fill();
   }
 
-  _drawText(ctx, x, selectedValueX) {
+  _drawText(x, selectedValueX) {
     let {offsetTop} = Config.layout.tooltip;
     offsetTop += 10;
     ctx.strokeStyle = '#000';

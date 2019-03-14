@@ -1,4 +1,4 @@
-import Utils from './utils';
+import { ctx } from './canvas';
 
 export default class {
 
@@ -19,47 +19,47 @@ export default class {
     this.yValuesPerMarker =  Math.round(this.deltaY / ticksOnY);
   }
 
-  draw(ctx, selectedValueX) {
+  draw(selectedValueX) {
     this._drawGridX(ctx, true);
     this._drawGridY(ctx);
     if (selectedValueX) {
-      this._drawVerticalGridLine(ctx, selectedValueX)
+      this._drawVerticalGridLine(selectedValueX)
     }
   }
 
-  _drawGridX(ctx, hideLines = false) {
+  _drawGridX(hideLines = false) {
     const step = this.xValuesPerMarker;
     for (let xValue = this.minX; xValue <= this.maxX; xValue += step) {
       const [fromX, fromY] = this.converter.coordsToPixel(xValue, this.minY);
       if (!hideLines) {
-        this._drawVerticalGridLine(ctx, xValue)
+        this._drawVerticalGridLine(xValue)
       }
-      this._drawGridText(ctx, xValue, fromX, fromY);
+      this._drawGridText(xValue, fromX, fromY);
     }
   }
 
-  _drawGridY(ctx) {
+  _drawGridY() {
     const step = this.yValuesPerMarker;
     for (let yValue = this.minY; yValue <= this.maxY; yValue += step) {
       const [fromX, fromY] = this.converter.coordsToPixel(this.minX, yValue);
-      this._drawHorizontalGridLine(ctx, yValue);
-      this._drawGridText(ctx, yValue, fromX, fromY);
+      this._drawHorizontalGridLine(yValue);
+      this._drawGridText(yValue, fromX, fromY);
     }
   }
 
-  _drawHorizontalGridLine(ctx, y) {
+  _drawHorizontalGridLine(y) {
     const [fromX, fromY] = this.converter.coordsToPixel(this.minX, y);
     const [toX, toY] = this.converter.coordsToPixel(this.maxX, y);
-    this._drawGridLine(ctx, fromX, fromY, toX, toY);
+    this._drawGridLine(fromX, fromY, toX, toY);
   }
 
-  _drawVerticalGridLine(ctx, x) {
+  _drawVerticalGridLine(x) {
     const [fromX, fromY] = this.converter.coordsToPixel(x, this.minY);
     const [toX, toY] = this.converter.coordsToPixel(x, this.maxY);
-    this._drawGridLine(ctx, fromX, fromY, toX, toY);
+    this._drawGridLine(fromX, fromY, toX, toY);
   }
 
-  _drawGridLine(ctx, fromX, fromY, toX, toY) {
+  _drawGridLine(fromX, fromY, toX, toY) {
     ctx.strokeStyle = '#d1d1d1';
     ctx.lineWidth = 1;
 
@@ -70,7 +70,7 @@ export default class {
     ctx.stroke();
   }
 
-  _drawGridText(ctx, text, x, y) {
+  _drawGridText(text, x, y) {
     ctx.strokeStyle = '#000000';
     ctx.fillStyle = '#000000';
     ctx.lineWidth = 1;
