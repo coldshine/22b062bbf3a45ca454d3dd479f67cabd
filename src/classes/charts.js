@@ -101,29 +101,24 @@ class ChartsFactory {
 
 }
 
-let chartsFactory;
-let dataFormatter;
-let converter;
-
 export default class {
 
   constructor(chartData, layout) {
-    dataFormatter = new ChartDataFormatter(chartData);
-    converter = new Converter(dataFormatter.getAllValuesX(), dataFormatter.getAllValuesY(), layout);
-    chartsFactory = new ChartsFactory(dataFormatter.getFormattedData(), converter);
+    this.dataFormatter = new ChartDataFormatter(chartData);
+    this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), layout);
+    this.chartsFactory = new ChartsFactory(this.dataFormatter.getFormattedData(), this.converter);
   }
 
   reduceValuesByX(minX, maxX) {
-    dataFormatter.reduceValuesByX(minX, maxX);
-    return this;
+    this.dataFormatter.reduceValuesByX(minX, maxX);
   }
 
   getConverter() {
-    return chartsFactory.converter;
+    return this.chartsFactory.converter;
   }
 
   getCharts() {
-    return chartsFactory.fetch();
+    return this.chartsFactory.fetch();
   }
 
 }

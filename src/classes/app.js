@@ -2,21 +2,20 @@ import Data from '../json/data';
 import Config from '../json/config';
 import MainView from './views/main-view';
 import NavigationView from './views/navigation-view';
+import store from '../redux/store';
+import { updateMousePosition } from '../redux/actions';
 
 const chartData = Data[0];
 
 class App {
 
   constructor(chartData) {
-    const minX = 1546905600000; //ms
-    const maxX = 1552003200000; //ms
-
     const {canvas, ctx} = this._initCanvas();
 
     this.canvas = canvas;
     this.ctx = ctx;
 
-    this.main = new MainView(chartData, minX, maxX);
+    this.main = new MainView(chartData);
     this.navigation = new NavigationView(chartData);
 
     this._draw();
@@ -54,14 +53,16 @@ class App {
 
   _bindEvents() {
     document.onmousemove = (e) => {
+
+
       const rect = this.canvas.getBoundingClientRect();
       const mouseX = Math.round(e.clientX - rect.left);
       const mouseY = Math.round(e.clientY - rect.top);
       const isInsideCanvas = mouseX.between(0, rect.width) && mouseY.between(0, rect.height);
       if (isInsideCanvas) {
-        this.main.onMouseMove(mouseX, mouseY);
+        store.dispatch(updateMousePosition(mouseX, mouseY));
       } else {
-        this.main.reset();
+        store.dispatch(updateMousePosition(-1, -1));
       }
     }
   }
