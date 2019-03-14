@@ -107,9 +107,9 @@ let converter;
 
 export default class {
 
-  constructor(chartData, viewportSize) {
+  constructor(chartData, layout) {
     dataFormatter = new ChartDataFormatter(chartData);
-    converter = new Converter(dataFormatter.getAllValuesX(), dataFormatter.getAllValuesY(), viewportSize);
+    converter = new Converter(dataFormatter.getAllValuesX(), dataFormatter.getAllValuesY(), layout);
     chartsFactory = new ChartsFactory(dataFormatter.getFormattedData(), converter);
   }
 

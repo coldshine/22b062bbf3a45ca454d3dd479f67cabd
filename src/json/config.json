@@ -1,8 +1,28 @@
 {
   "layout": {
-    "canvasSize":     [600, 600],
-    "chartSize":      [600, 500],
-    "navigationSize": [600, 80],
-    "popupSize":      [80, 40]
+    "canvas": {
+      "width": 600,
+      "height": 600,
+      "offsetTop": 0,
+      "offsetLeft": 0
+    },
+    "main": {
+      "width": 600,
+      "height": 500,
+      "offsetTop": 0,
+      "offsetLeft": 0
+    },
+    "navigation": {
+      "width": 600,
+      "height": 80,
+      "offsetTop": 520,
+      "offsetLeft": 0
+    },
+    "tooltip": {
+      "width": 80,
+      "height": 40,
+      "offsetTop": 20,
+      "offsetLeft": 0
+    }
   }
 }

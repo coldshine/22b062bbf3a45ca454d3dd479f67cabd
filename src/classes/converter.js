@@ -2,10 +2,9 @@ import Utils from './utils';
 
 export default class {
 
-  constructor(valuesX, valuesY, viewportSize) {
+  constructor(valuesX, valuesY, layout) {
     const [minX, maxX] = Utils.getMinMax(valuesX); // [x, y]
     const [minY, maxY] = Utils.getMinMax(valuesY); // [x, y]
-    const [viewportWidth, viewportHeight] = viewportSize;
 
     this.valuesX = valuesX;
     this.valuesY = valuesY;
@@ -15,30 +14,29 @@ export default class {
     this.maxY = maxY;
     this.deltaX = maxX - minX;
     this.deltaY = maxY - minY;
-    this.viewportWidth = viewportWidth;
-    this.viewportHeight = viewportHeight;
+    this.layout = layout;
 
   }
 
   coordsToPixel(x, y) {
     y = this.maxY - y; // y should be inverted since order is from the bottom to the top
     return [
-      this.coordToPixel(x, this.minX, this.deltaX, this.viewportWidth),
-      this.coordToPixel(y, this.minY, this.deltaY, this.viewportHeight),
+      this.coordToPixel(x, this.minX, this.deltaX, this.layout.width, this.layout.offsetLeft),
+      this.coordToPixel(y, this.minY, this.deltaY, this.layout.height, this.layout.offsetTop),
     ]
   }
 
   pxToValueX(x) {
-    return this.pxToCoords(x, this.minX, this.deltaX, this.valuesX, this.viewportWidth);
+    return this.pxToCoords(x, this.minX, this.deltaX, this.valuesX, this.layout.width);
   }
 
   /**
    * Converts chart one coordinate (x or y) to pixel position
    */
-  coordToPixel(value, minValue, delta, maxPx) {
+  coordToPixel(value, minValue, delta, maxPx, offset) {
     const localValue = value - minValue;
     const pc = localValue / delta; // percents
-    return Math.round(pc * maxPx); // pixels
+    return Math.round(pc * maxPx) + offset; // pixels
   }
 
   /**

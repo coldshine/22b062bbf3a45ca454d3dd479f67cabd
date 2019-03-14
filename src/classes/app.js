@@ -16,7 +16,7 @@ class App {
     this.canvas = canvas;
     this.ctx = ctx;
 
-    this.charts = new MainView(chartData, minX, maxX);
+    this.main = new MainView(chartData, minX, maxX);
     this.navigation = new NavigationView(chartData);
 
     this._draw();
@@ -28,9 +28,10 @@ class App {
     const scaleFactor = 1;
 
     const canvas = document.getElementById('canvas');
-    const [width, height] = Config.layout.canvasSize;
+    const {width, height} = Config.layout.canvas;
     canvas.width = width * scaleFactor;
     canvas.height = height * scaleFactor;
+    // toDo offset top & offset left
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
 
@@ -46,7 +47,7 @@ class App {
 
   _draw() {
     this._clear();
-    this.charts.draw(this.ctx);
+    this.main.draw(this.ctx);
     this.navigation.draw(this.ctx);
     window.requestAnimationFrame(() => this._draw());
   }
@@ -55,7 +56,13 @@ class App {
     document.onmousemove = (e) => {
       const rect = this.canvas.getBoundingClientRect();
       const mouseX = Math.round(e.clientX - rect.left);
-      this.charts.onMouseMove(mouseX);
+      const mouseY = Math.round(e.clientY - rect.top);
+      const isInsideCanvas = mouseX.between(0, rect.width) && mouseY.between(0, rect.height);
+      if (isInsideCanvas) {
+        this.main.onMouseMove(mouseX, mouseY);
+      } else {
+        this.main.reset();
+      }
     }
   }
 

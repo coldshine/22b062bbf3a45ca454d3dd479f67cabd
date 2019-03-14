@@ -4,7 +4,7 @@ import Charts from '../charts';
 export default class {
 
   constructor(chartsData) {
-    const chartsFactory = new Charts(chartsData, Config.layout.navigationSize);
+    const chartsFactory = new Charts(chartsData, Config.layout.navigation);
     this.charts = chartsFactory.getCharts();
   }
 
@@ -17,10 +17,10 @@ export default class {
     ctx.fillStyle = '#eaffdd';
     ctx.beginPath();
     ctx.rect(
-      0,
-      Config.layout.chartSize[1] + 20,
-      Config.layout.canvasSize[0],
-      Config.layout.canvasSize[1] - Config.layout.chartSize[1] - 20
+      Config.layout.navigation.offsetLeft,
+      Config.layout.navigation.offsetTop,
+      Config.layout.navigation.width,
+      Config.layout.navigation.height
     );
     ctx.fill();
   }
