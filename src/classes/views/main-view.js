@@ -7,19 +7,15 @@ export default class {
 
   constructor(chartsData, minX, maxX) {
 
-    const chartsFactory = new Charts(chartsData);
-    chartsFactory.setViewportSize(Config.layout.chartSize);
+    const chartsFactory = new Charts(chartsData, Config.layout.chartSize);
     chartsFactory.reduceValuesByX(minX, maxX);
 
-    const allValuesX = chartsFactory.getAllValuesX();
-    const allValuesY = chartsFactory.getAllValuesY();
     const converter = chartsFactory.getConverter();
     const charts = chartsFactory.getCharts();
 
-    this.grid = new Grid(allValuesX, allValuesY, converter);
-    this.selectedValuesPopup = new SelectedValuesPopup(allValuesX, allValuesY, charts, converter);
+    this.grid = new Grid(converter);
+    this.selectedValuesPopup = new SelectedValuesPopup(charts, converter);
 
-    this.allValuesX = allValuesX;
     this.converter = converter;
     this.charts = charts;
     this.selectedValueX = null;
@@ -34,7 +30,7 @@ export default class {
 
   onMouseMove(mouseX) {
     this.selectedValueX = this.converter.pxToValueX(mouseX);
-    this.selectedValueIndex = this.allValuesX.indexOf(this.selectedValueX);
+    this.selectedValueIndex = this.converter.valuesX.indexOf(this.selectedValueX);
   }
 
 }

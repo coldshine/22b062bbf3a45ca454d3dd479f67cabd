@@ -77,17 +77,15 @@ class ChartDataFormatter {
 
 class ChartsFactory {
 
-  constructor(formatter) {
-    this.formatter = formatter;
-    this.viewportSize = null;
+  constructor(chartsData, converter) {
+    this.chartsData = chartsData;
+    this.converter = converter;
   }
 
   fetch() {
-    const chartsData = this.formatter.getFormattedData();
-    const converter = this.getConverter();
-
+    const converter = this.converter;
     const charts = [];
-    chartsData.forEach((chartData) => {
+    this.chartsData.forEach((chartData) => {
       switch (chartData.type) {
         case 'line':
           charts.push(new LineChart(chartData, converter));
@@ -101,28 +99,18 @@ class ChartsFactory {
     return charts;
   }
 
-  getConverter() {
-    return new Converter(
-      this.formatter.getAllValuesX(),
-      this.formatter.getAllValuesY(),
-      this.viewportSize
-    );
-  }
 }
 
 let chartsFactory;
 let dataFormatter;
+let converter;
 
 export default class {
 
-  constructor(chartData) {
+  constructor(chartData, viewportSize) {
     dataFormatter = new ChartDataFormatter(chartData);
-    chartsFactory = new ChartsFactory(dataFormatter);
-  }
-
-  setViewportSize(viewportSize) {
-    chartsFactory.viewportSize = viewportSize;
-    return this;
+    converter = new Converter(dataFormatter.getAllValuesX(), dataFormatter.getAllValuesY(), viewportSize);
+    chartsFactory = new ChartsFactory(dataFormatter.getFormattedData(), converter);
   }
 
   reduceValuesByX(minX, maxX) {
@@ -130,16 +118,8 @@ export default class {
     return this;
   }
 
-  getAllValuesX() {
-    return dataFormatter.getAllValuesX();
-  }
-
-  getAllValuesY() {
-    return dataFormatter.getAllValuesY();
-  }
-
   getConverter() {
-    return chartsFactory.getConverter();
+    return chartsFactory.converter;
   }
 
   getCharts() {

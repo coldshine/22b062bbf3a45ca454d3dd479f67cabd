@@ -2,22 +2,19 @@ import Utils from './utils';
 
 export default class {
 
-  constructor(valuesX, valuesY, converter) {
-    const [minX, maxX] = Utils.getMinMax(valuesX);
-    const [minY, maxY] = Utils.getMinMax(valuesY);
-
+  constructor(converter) {
     const ticksOnX = 6;
     const ticksOnY = 7;
 
-    this.valuesX = valuesX;
-    this.valuesY = valuesY;
     this.converter = converter;
-    this.minX = minX;
-    this.maxX = maxX;
-    this.minY = minY;
-    this.maxY = maxY;
-    this.deltaX = maxX - minX;
-    this.deltaY = maxY - minY;
+    this.valuesX = converter.valuesX;
+    this.valuesY = converter.valuesY;
+    this.minX = converter.minX;
+    this.maxX = converter.maxX;
+    this.minY = converter.minY;
+    this.maxY = converter.maxY;
+    this.deltaX = converter.deltaX;
+    this.deltaY = converter.deltaY;
     this.xValuesPerMarker = Math.round(this.deltaX / ticksOnX);
     this.yValuesPerMarker =  Math.round(this.deltaY / ticksOnY);
   }

@@ -4,9 +4,7 @@ import Charts from '../charts';
 export default class {
 
   constructor(chartsData) {
-
-    const chartsFactory = new Charts(chartsData);
-    chartsFactory.setViewportSize(Config.layout.navigationSize);
+    const chartsFactory = new Charts(chartsData, Config.layout.navigationSize);
     this.charts = chartsFactory.getCharts();
   }
 

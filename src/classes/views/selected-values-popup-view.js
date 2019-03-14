@@ -3,18 +3,17 @@ import Utils from '../utils';
 
 export default class {
 
-  constructor(valuesX, valuesY, charts, converter) {
-    const [minX, maxX] = Utils.getMinMax(valuesX);
-    const [minY, maxY] = Utils.getMinMax(valuesY);
-
-    this.minX = minX;
-    this.maxX = maxX;
-    this.minY = minY;
-    this.maxY = maxY;
+  constructor(charts, converter) {
     this.charts = charts;
-    this.valuesX = valuesX;
-    this.valuesY = valuesY;
     this.converter = converter;
+    this.valuesX = converter.valuesX;
+    this.valuesY = converter.valuesY;
+    this.minX = converter.minX;
+    this.maxX = converter.maxX;
+    this.minY = converter.minY;
+    this.maxY = converter.maxY;
+    this.deltaX = converter.deltaX;
+    this.deltaY = converter.deltaY;
   }
 
   draw(ctx, selectedValueX) {
