@@ -1,5 +1,5 @@
 export const UPDATE_VISIBLE_RANGE = 'UPDATE_VISIBLE_RANGE';
-export const UPDATE_MOUSE_POSITION = 'UPDATE_MOUSE_POSITION';
+export const UPDATE_HOVERED_VALUE_INDEX = 'UPDATE_HOVERED_VALUE_INDEX';
 
 export function updateVisibleRange(minX, maxX) {
   return {
@@ -11,12 +11,9 @@ export function updateVisibleRange(minX, maxX) {
   }
 }
 
-export function updateMousePosition(mouseX, mouseY) {
+export function updateHoveredValueIndex(valueIndex) {
   return {
-    type: UPDATE_MOUSE_POSITION,
-    payload: {
-      mouseX,
-      mouseY
-    }
+    type: UPDATE_HOVERED_VALUE_INDEX,
+    payload: valueIndex
   }
 }

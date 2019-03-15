@@ -13,3 +13,5 @@ canvas.style.height = height + 'px';
 
 export const ctx = canvas.getContext('2d');
 ctx.scale(scaleFactor, scaleFactor);
+
+export const boundingClientRect = canvas.getBoundingClientRect();

@@ -4,7 +4,8 @@ import Converter from './converter';
 class ChartDataFormatter {
 
   constructor(chartData) {
-    this.chartData = chartData;
+    this.chartDataOriginal = Object.assign({}, chartData);
+    this.chartData = Object.assign({}, chartData);
   }
 
   getFormattedData() {
@@ -49,29 +50,34 @@ class ChartDataFormatter {
   }
 
   reduceValuesByX(minX, maxX) {
-    const [minValueIndex, maxValueIndex]  = this.getIndicesByValuesX(minX, maxX);
+    this.resetReducedData();
+    const [minValueIndex, maxValueIndex] = this.getIndicesByValuesX(minX, maxX);
     this.reduceValuesTo(minValueIndex, maxValueIndex);
   }
 
   reduceValuesTo(minValueIndex, maxValueIndex) {
     this.chartData.columns = this.chartData.columns.map((column) => {
-      return [column[0]].concat(column.slice(minValueIndex, maxValueIndex));
+      return [column[0]].concat(column.slice(minValueIndex + 1, maxValueIndex + 2));
     });
   }
 
   getIndicesByValuesX(minX, maxX) {
-    let minValueIndex = 0;
-    let maxValueIndex = 0;
+    let minValueIndex = -1;
+    let maxValueIndex = -1;
 
     this.getAllValuesX().forEach((xValue, i) => {
-      if (xValue >= minX && !minValueIndex) {
+      if (xValue >= minX && minValueIndex === -1) {
         minValueIndex = i;
       }
-      if (xValue >= maxX && !maxValueIndex) {
+      if (xValue >= maxX && maxValueIndex === -1) {
         maxValueIndex = i;
       }
     });
     return [minValueIndex, maxValueIndex];
+  }
+
+  resetReducedData() {
+    this.chartData = Object.assign({}, this.chartDataOriginal);
   }
 
 }
@@ -81,15 +87,17 @@ class ChartsFactory {
   constructor(chartsData, converter) {
     this.chartsData = chartsData;
     this.converter = converter;
+    this.hasHover = false;
   }
 
   fetch() {
     const converter = this.converter;
+    const hasHover = this.hasHover;
     const charts = [];
     this.chartsData.forEach((chartData) => {
       switch (chartData.type) {
         case 'line':
-          charts.push(new LineChart(chartData, converter));
+          charts.push(new LineChart(chartData, converter, hasHover));
           break;
         default:
           console.error(`unsupported chart type ${type}`);
@@ -106,15 +114,20 @@ export default class {
 
   constructor(chartData, layout) {
     this.layout = layout;
-    this.dataFormatter = new ChartDataFormatter(Object.assign({}, chartData));
+    this.dataFormatter = new ChartDataFormatter(chartData);
     this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), this.layout);
     this.chartsFactory = new ChartsFactory(this.dataFormatter.getFormattedData(), this.converter);
   }
 
   reduceValuesByX(minX, maxX) {
     this.dataFormatter.reduceValuesByX(minX, maxX);
-    this.converter = new Converter(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY(), this.layout);
-    this.chartsFactory = new ChartsFactory(this.dataFormatter.getFormattedData(), this.converter);
+    this.converter.updateValues(this.dataFormatter.getAllValuesX(), this.dataFormatter.getAllValuesY());
+    this.chartsFactory.chartsData = this.dataFormatter.getFormattedData();
+    this.chartsFactory.converter = this.converter;
+  }
+
+  enableHover() {
+    this.chartsFactory.hasHover = true;
   }
 
   getConverter() {

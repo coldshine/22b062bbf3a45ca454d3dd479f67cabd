@@ -3,9 +3,13 @@ import Utils from './utils';
 export default class {
 
   constructor(valuesX, valuesY, layout) {
+    this.layout = layout;
+    this.updateValues(valuesX, valuesY);
+  }
+
+  updateValues(valuesX, valuesY) {
     const [minX, maxX] = Utils.getMinMax(valuesX); // [x, y]
     const [minY, maxY] = Utils.getMinMax(valuesY); // [x, y]
-
     this.valuesX = valuesX;
     this.valuesY = valuesY;
     this.minX = minX;
@@ -14,8 +18,6 @@ export default class {
     this.maxY = maxY;
     this.deltaX = maxX - minX;
     this.deltaY = maxY - minY;
-    this.layout = layout;
-
   }
 
   coordsToPixel(x, y) {

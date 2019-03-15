@@ -1,18 +1,20 @@
-import { UPDATE_VISIBLE_RANGE, UPDATE_MOUSE_POSITION } from './actions';
+import {
+  UPDATE_VISIBLE_RANGE,
+  UPDATE_HOVERED_VALUE_INDEX
+} from './actions';
 
 const initialState = {
-  minX: 1547164800000,
-  maxX: 1549843200000,
-  mouseX: -1,
-  mouseY: -1,
+  minX: 1542412800000,
+  maxX: 1542672000000,
+  hoveredValueIndex: null,
 };
 
 function charts(state = initialState, action) {
   switch (action.type) {
     case UPDATE_VISIBLE_RANGE:
       return Object.assign(state, action.payload);
-    case UPDATE_MOUSE_POSITION:
-      return Object.assign(state, action.payload);
+    case UPDATE_HOVERED_VALUE_INDEX:
+      return Object.assign(state, { hoveredValueIndex: action.payload });
     default:
       return state
   }

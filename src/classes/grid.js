@@ -1,4 +1,5 @@
 import { ctx } from './canvas';
+import store from '../redux/store';
 
 export default class {
 
@@ -17,13 +18,25 @@ export default class {
     this.deltaY = converter.deltaY;
     this.xValuesPerMarker = Math.round(this.deltaX / ticksOnX);
     this.yValuesPerMarker =  Math.round(this.deltaY / ticksOnY);
+    this.hoveredValueIndex = null;
+    this._bindEvents();
   }
 
-  draw(selectedValueX) {
-    this._drawGridX(ctx, true);
-    this._drawGridY(ctx);
-    if (selectedValueX) {
-      this._drawVerticalGridLine(selectedValueX)
+  _bindEvents() {
+    store.subscribe(() => this.onStoreChange());
+  }
+
+  onStoreChange() {
+    const { hoveredValueIndex } = store.getState();
+    this.hoveredValueIndex = hoveredValueIndex;
+  }
+
+  draw() {
+    this._drawGridX(true);
+    this._drawGridY();
+    if (this.hoveredValueIndex !== null) {
+      const xValue = this.valuesX[this.hoveredValueIndex];
+      this._drawVerticalGridLine(xValue);
     }
   }
 
