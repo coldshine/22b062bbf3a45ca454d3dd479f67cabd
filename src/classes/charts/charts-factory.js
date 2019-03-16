@@ -38,10 +38,10 @@ class ChartsFactory {
 
   createCharts() {
     this.charts = [];
-    this.dataManager.getNormalizedData().forEach((chart) => {
-      switch (chart.type) {
+    this.dataManager.getNormalizedData().forEach((item) => {
+      switch (item.type) {
         case 'line':
-          this.charts.push(new LineChartView(chart));
+          this.charts.push(new LineChartView(item));
           break;
         default:
           console.error(`unsupported chart type ${type}`);
