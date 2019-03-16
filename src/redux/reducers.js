@@ -1,20 +1,16 @@
 import {
-  UPDATE_VISIBLE_RANGE,
-  UPDATE_HOVERED_VALUE_INDEX
+  UPDATE_VISIBLE_RANGE
 } from './actions';
 
 const initialState = {
-  minX: 1542412800000,
-  maxX: 1542672000000,
+  visibleRange: [0.25, 0.5],
   hoveredValueIndex: null,
 };
 
 function charts(state = initialState, action) {
   switch (action.type) {
     case UPDATE_VISIBLE_RANGE:
-      return Object.assign(state, action.payload);
-    case UPDATE_HOVERED_VALUE_INDEX:
-      return Object.assign(state, { hoveredValueIndex: action.payload });
+      return Object.assign(state, { visibleRange: action.payload });
     default:
       return state
   }

@@ -25,4 +25,9 @@ export default class {
     const {width, height, offsetTop, offsetLeft} = layout;
     return mouseX.between(offsetLeft, offsetLeft + width) && mouseY.between(offsetTop, offsetTop + height);
   }
+
+  static formatMonth(month) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[month];
+  }
 }
