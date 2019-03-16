@@ -18,7 +18,7 @@ module.exports = (env, options) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: 'index.html'
-      }),
+      })
     ],
     output: {
       filename: '[name].bundle.js',
