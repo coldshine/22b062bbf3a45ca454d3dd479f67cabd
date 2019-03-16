@@ -1,8 +1,8 @@
 {
   "scripts": {
     "watch": "webpack-dev-server  --progress --color",
-    "build:dev": "webpack --progress",
-    "build:prod": "NODE_ENV=production webpack --progress"
+    "build:dev": "webpack --mode development --progress",
+    "build:prod": "webpack --mode production --progress"
   },
   "dependencies": {
     "@babel/core": "^7.3.4",
