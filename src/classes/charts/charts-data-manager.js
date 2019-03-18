@@ -67,8 +67,8 @@ class ChartsDataManager {
 
   getCaptionsOnAxisY() {
     const captions = [];
-    const step = Math.round(this.converter.maxY / 5);
-    for (let i = 0; i < this.converter.maxY; i += step) {
+    const step = Math.round(this.converter.deltaY / 5);
+    for (let i = this.converter.minY; i < this.converter.maxY; i += step) {
       captions.push(i);
     }
     return captions;
