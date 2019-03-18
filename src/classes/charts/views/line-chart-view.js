@@ -4,14 +4,15 @@ class LineChart {
 
   constructor(data) {
     this.data = data;
-    this.hasAnimation = false;
-    this.animationId = null;
-    this.animationSpeed = 5;
+    this.animationTime = 5;
+    this.targetY = [];
   }
 
-  enableAnimation() {
-    this.hasAnimation = true;
-    this.targetY = [];
+  draw() {
+    if (this._needAnimation()) {
+      this._animate();
+    }
+    this._drawChart();
   }
 
   updatePositions(positionsX, positionsY) {
@@ -24,57 +25,41 @@ class LineChart {
   }
 
   _updateY(positionsY) {
-    if (this.hasAnimation) {
-      this.targetY = positionsY.slice(0);
-      this._startAnimation();
-    } else {
-      this.data.positionsY = positionsY.slice(0);
-    }
+    this.targetY = positionsY.slice(0);
   }
 
-  _startAnimation() {
-    this._stopAnimation();
-    this.animationId = setInterval(() => {
-      if (this._isAnimationCompleted()) {
-        this._stopAnimation();
-      } else {
-        this.data.positionsY = this._recalculatePositions(this.data.positionsY, this.targetY);
-      }
-    }, 10);
-  }
-
-  _stopAnimation() {
-    if (this.animationId) {
-      clearInterval(this.animationId);
-    }
-  }
-
-  _isAnimationCompleted() {
-    let deltaY = 0;
-    for (let i = 0; i < this.data.positionsY.length; i++) {
-      const currentY = this.data.positionsY[i];
-      const targetY = this.targetY[i];
-      deltaY = Math.max(Math.abs(targetY - currentY), deltaY);
-    }
-    return deltaY === 0;
-  }
-
-  _recalculatePositions(positions, targets) {
-    return positions.map((position, i) => {
-      const target = targets[i];
+  _animate() {
+    let inProgress = false;
+    this.data.positionsY = this.data.positionsY.map((position, i) => {
+      const target = this.targetY[i];
       const delta = target - position;
-      let increment = delta / this.animationSpeed;
-      if (delta > 0) {
-        increment = Math.min(Math.ceil(increment), delta);
-      } else if (delta < 0) {
-        increment = Math.max(Math.floor(increment), delta);
+      if (delta !== 0) {
+        inProgress = true;
+        position = this._recalculatePosition(position, delta);
       }
-      position += increment;
       return position;
     });
+    if (!inProgress) {
+      this.targetY = [];
+    }
   }
 
-  draw() {
+  _recalculatePosition(position, delta) {
+    let increment = delta / this.animationTime;
+    if (delta > 0) {
+      increment = Math.min(Math.ceil(increment), delta);
+    } else if (delta < 0) {
+      increment = Math.max(Math.floor(increment), delta);
+    }
+    position += increment;
+    return position;
+  }
+
+  _needAnimation() {
+    return this.targetY.length;
+  }
+
+  _drawChart() {
     ctx.save();
     ctx.lineWidth = 2;
     ctx.strokeStyle = this.data.color;
@@ -90,7 +75,6 @@ class LineChart {
     ctx.stroke();
     ctx.restore();
   }
-
 }
 
 export default LineChart;

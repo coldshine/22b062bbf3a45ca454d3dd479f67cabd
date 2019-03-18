@@ -10,7 +10,6 @@ export default class {
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
       .enableHover()
-      .enableAnimation()
       .setVisibleRange(visibleRange)
     ;
     this.charts = this.chartsFactory.createCharts();

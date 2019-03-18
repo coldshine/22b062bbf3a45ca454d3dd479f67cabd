@@ -10,7 +10,6 @@ class ChartsFactory {
   constructor() {
     this.dataManager = null;
     this.hasHover = false;
-    this.hasAnimation = false;
     this.charts = [];
     this.grid = null;
     this.tooltip = null;
@@ -41,20 +40,12 @@ class ChartsFactory {
     return this;
   }
 
-  enableAnimation() {
-    this.hasAnimation = true;
-    return this;
-  }
-
   createCharts() {
     this.charts = [];
     this.dataManager.getNormalizedChartsDataAll().forEach((item) => {
       switch (item.type) {
         case 'line':
           const chart = new LineChartView(item);
-          if (this.hasAnimation) {
-            chart.enableAnimation();
-          }
           this.charts.push(chart);
           break;
         default:
