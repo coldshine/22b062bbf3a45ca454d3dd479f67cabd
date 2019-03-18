@@ -60,7 +60,7 @@ export default class {
         }
       }
     }, false);
-    canvas.addEventListener("mouseup", () => {
+    document.addEventListener('mouseup', () => {
       currentMouseX = false;
     }, false);
   }
@@ -90,6 +90,7 @@ export default class {
   }
 
   drawHandlerPart(offsetLeft, width) {
+    ctx.save();
     ctx.fillStyle = 'rgba(234,255,221,0.5)';
     ctx.beginPath();
     ctx.rect(
@@ -99,6 +100,7 @@ export default class {
       Config.layout.navigation.height
     );
     ctx.fill();
+    ctx.restore();
   }
 
 }

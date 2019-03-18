@@ -18,6 +18,12 @@ class GridView {
     this.stepX = minSpaceBetweenGridLineX / (this.positionsX[1] - this.positionsX[0]);
   }
 
+  updatePositions(positionsX, positionsY, captionsY) {
+    this.positionsX = positionsX;
+    this.positionsY = positionsY;
+    this.captionsY = captionsY;
+  }
+
   setHoverPositionX(hoverPositionX) {
     this.hoverPositionX = hoverPositionX;
   }

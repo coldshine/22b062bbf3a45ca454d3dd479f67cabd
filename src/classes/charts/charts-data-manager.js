@@ -7,6 +7,7 @@ class ChartsDataManager {
     this.chartsData = chartData;
     this.converter = null;
     this.visibleRange = null;
+    this.yAxisSteps = [0.5, 1, 2, 5, 10, 20]; // toDo
   }
 
   setLayout(layout) {
@@ -19,12 +20,10 @@ class ChartsDataManager {
     this.converter.setMaxVisibleValueY(this.getMaxVisibleValueY(visibleRange));
   }
 
-  getNormalizedData() {
+  getNormalizedChartsDataAll() {
     const result = [];
     for (let chartIndex = 0; chartIndex < this.getChartsAmount(); chartIndex++) {
-      let chartData = this.extractChartData(chartIndex);
-      chartData = this.calculatePositions(chartData);
-      result.push(chartData);
+      result.push(this.prepareChartData(chartIndex));
     }
     return result;
   }
@@ -45,7 +44,7 @@ class ChartsDataManager {
   getMaxVisibleValueY(visibleRange) {
     const [from, to] = visibleRange;
     let maxVisibleValueY = 0;
-    this.getNormalizedData().forEach((chart) => {
+    this.getNormalizedChartsDataAll().forEach((chart) => {
       const indexFrom = Math.floor(chart.valuesY.length * from);
       const indexTo = Math.ceil(chart.valuesY.length * to);
       const valuesY = chart.valuesY.slice(indexFrom, indexTo);
@@ -69,7 +68,7 @@ class ChartsDataManager {
   getCaptionsOnAxisY() {
     const captions = [];
     const step = Math.round(this.converter.maxY / 5);
-    for (let i = 0; i <= this.converter.maxY; i += step) {
+    for (let i = 0; i < this.converter.maxY; i += step) {
       captions.push(i);
     }
     return captions;
@@ -87,26 +86,36 @@ class ChartsDataManager {
     return this.chartsData.columns.length - 1;
   }
 
-  extractChartData(chartIndex) {
+  prepareChartData(chartIndex) {
     const chartKey = `y${chartIndex}`;
+    const valuesX = this.getAllValuesX();
+    const valuesY = this.getValuesInColumn(chartKey);
+    const valuesCount = valuesX.length;
+    const [positionsX, positionsY] = this.calculatePositions(valuesX, valuesY, valuesCount);
     return {
+      index: chartIndex,
       type: this.chartsData.types[chartKey],
       color: this.chartsData.colors[chartKey],
       name: this.chartsData.names[chartKey],
-      valuesCount: this.getAllValuesX().length,
-      valuesX: this.getAllValuesX(),
-      valuesY: this.getValuesInColumn(chartKey),
+      valuesCount,
+      valuesX,
+      valuesY,
+      positionsX,
+      positionsY,
     };
   }
 
-  calculatePositions(chartData) {
-    chartData.positions = [];
-    for (let i = 0; i < chartData.valuesCount; i++) {
-      const x = chartData.valuesX[i];
-      const y = chartData.valuesY[i];
-      chartData.positions.push(this.converter.coordsToPxPosition(x, y));
+  calculatePositions(valuesX, valuesY, valuesCount) {
+    const positionsX = [];
+    const positionsY = [];
+    for (let i = 0; i < valuesCount; i++) {
+      const x = valuesX[i];
+      const y = valuesY[i];
+      const [positionX, positionY] = this.converter.coordsToPxPosition(x, y);
+      positionsX.push(positionX);
+      positionsY.push(positionY);
     }
-    return chartData;
+    return [positionsX, positionsY];
   }
 
   getHoverPosition(mouseX, mouseY) {

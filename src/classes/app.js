@@ -3,7 +3,7 @@ import MainView from './views/main-view';
 import NavigationView from './views/navigation-view';
 import { canvas, ctx } from './canvas';
 
-const chartData = Data[0];
+const chartData = Data[2];
 
 Number.prototype.between = function (a, b, inclusive) {
   const min = Math.min(a, b);

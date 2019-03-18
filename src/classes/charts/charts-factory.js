@@ -1,7 +1,7 @@
 import LineChartView from './views/line-chart-view';
 import LineChartHoverView from './views/line-chart-hover-view';
 import GridView from './views/grid-view';
-import { boundingClientRect } from "../canvas";
+import { boundingClientRect } from '../canvas';
 import ChartsDataManager from './charts-data-manager';
 import Tooltip from '../views/tooltip-view';
 
@@ -10,6 +10,7 @@ class ChartsFactory {
   constructor() {
     this.dataManager = null;
     this.hasHover = false;
+    this.hasAnimation = false;
     this.charts = [];
     this.grid = null;
     this.tooltip = null;
@@ -27,6 +28,10 @@ class ChartsFactory {
 
   setVisibleRange(visibleRange) {
     this.dataManager.setVisibleRange(visibleRange);
+    this.updateCharts();
+    if (this.grid) {
+      this.updateGrid();
+    }
     return this;
   }
 
@@ -36,12 +41,21 @@ class ChartsFactory {
     return this;
   }
 
+  enableAnimation() {
+    this.hasAnimation = true;
+    return this;
+  }
+
   createCharts() {
     this.charts = [];
-    this.dataManager.getNormalizedData().forEach((item) => {
+    this.dataManager.getNormalizedChartsDataAll().forEach((item) => {
       switch (item.type) {
         case 'line':
-          this.charts.push(new LineChartView(item));
+          const chart = new LineChartView(item);
+          if (this.hasAnimation) {
+            chart.enableAnimation();
+          }
+          this.charts.push(chart);
           break;
         default:
           console.error(`unsupported chart type ${type}`);
@@ -52,6 +66,24 @@ class ChartsFactory {
       this._createChartsHover();
     }
     return this.charts;
+  }
+
+  updateCharts() {
+    this.charts
+      .filter((chart) => typeof chart.updatePositions === 'function')
+      .forEach((chart) => {
+        const currentChartData = chart.data;
+        const {positionsX, positionsY} = this.dataManager.getNormalizedChartsDataAll()[currentChartData.index];
+        chart.updatePositions(positionsX, positionsY);
+      });
+  }
+
+  updateGrid() {
+    this.grid.updatePositions(
+      this.dataManager.getAllPositionsX(),
+      this.dataManager.getPositionsOnAxisY(),
+      this.dataManager.getCaptionsOnAxisY(),
+    );
   }
 
   createGrid() {
@@ -71,7 +103,7 @@ class ChartsFactory {
   }
 
   _createChartsHover() {
-    this.dataManager.getNormalizedData().forEach((chart) => {
+    this.dataManager.getNormalizedChartsDataAll().forEach((chart) => {
       switch (chart.type) {
         case 'line':
           this.charts.push(new LineChartHoverView(chart));
@@ -104,7 +136,6 @@ class ChartsFactory {
     charts
       .filter((chart) => typeof chart.setHoverPosition === 'function')
       .forEach((chart) => chart.setHoverPosition(hoverPositionsX, chart.hoverCoordY));
-
 
     if (this.grid) {
       this.grid.setHoverPositionX(hoverPositionsX);

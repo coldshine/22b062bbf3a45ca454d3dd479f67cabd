@@ -10,6 +10,7 @@ export default class {
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
       .enableHover()
+      .enableAnimation()
       .setVisibleRange(visibleRange)
     ;
     this.charts = this.chartsFactory.createCharts();
@@ -31,8 +32,5 @@ export default class {
   onStoreUpdate() {
     const { visibleRange } = store.getState();
     this.chartsFactory.setVisibleRange(visibleRange);
-    this.charts = this.chartsFactory.createCharts();
-    this.grid = this.chartsFactory.createGrid();
-    this.tooltip = this.chartsFactory.createTooltip();
   }
 }

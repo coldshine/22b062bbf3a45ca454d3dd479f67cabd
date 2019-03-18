@@ -29,6 +29,7 @@ class Tooltip {
   }
 
   _drawSquare(x) {
+    ctx.save();
     const {width, height, offsetTop} = this.layout;
     ctx.strokeStyle = '#bdbdbd';
     ctx.fillStyle = '#ffffff';
@@ -36,11 +37,13 @@ class Tooltip {
     ctx.rect(x - width / 2, offsetTop, width, height);
     ctx.stroke();
     ctx.fill();
+    ctx.restore();
   }
 
   _drawText(x, caption) {
     let {offsetTop} = this.layout;
     offsetTop += 10;
+    ctx.save();
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#000';
     ctx.fillText(caption, x, offsetTop);
@@ -53,6 +56,7 @@ class Tooltip {
       ctx.fillText(chart.hoverValueY, x + textOffset, offsetTop);
       textOffset += 20;
     });
+    ctx.restore();
   }
 }
 
