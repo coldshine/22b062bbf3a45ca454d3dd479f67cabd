@@ -7,7 +7,6 @@ class ChartsDataManager {
     this.chartsData = chartData;
     this.converter = null;
     this.visibleRange = null;
-    this.yAxisSteps = [0.5, 1, 2, 5, 10, 20]; // toDo
   }
 
   setLayout(layout) {
@@ -17,7 +16,7 @@ class ChartsDataManager {
   setVisibleRange(visibleRange) {
     this.visibleRange = visibleRange;
     this.converter.setVisibleRange(visibleRange);
-    this.converter.setMaxVisibleValueY(this.getMaxVisibleValueY(visibleRange));
+    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY(visibleRange));
   }
 
   getNormalizedChartsDataAll() {
@@ -34,24 +33,24 @@ class ChartsDataManager {
 
   getAllValuesY() {
     const columns = this.chartsData.columns.filter((column) => column[0] !== this.chartsData.types.x);
-    let allValuesY = [0]; // chart values should started with zero
-    columns.forEach((column) => {
-      allValuesY = allValuesY.concat(column.slice(1));
-    });
+    let allValuesY = [];
+    columns.forEach((column) => allValuesY = allValuesY.concat(column.slice(1)));
     return allValuesY;
   }
 
-  getMaxVisibleValueY(visibleRange) {
+  getMinMaxVisibleValueY(visibleRange) {
     const [from, to] = visibleRange;
-    let maxVisibleValueY = 0;
+    let minVisibleValueY = null;
+    let maxVisibleValueY = null;
     this.getNormalizedChartsDataAll().forEach((chart) => {
       const indexFrom = Math.floor(chart.valuesY.length * from);
       const indexTo = Math.ceil(chart.valuesY.length * to);
       const valuesY = chart.valuesY.slice(indexFrom, indexTo);
       const [min, max] = Utils.getMinMax(valuesY);
-      maxVisibleValueY = Math.max(maxVisibleValueY, max);
+      minVisibleValueY = minVisibleValueY ? Math.min(minVisibleValueY, min) : min;
+      maxVisibleValueY = maxVisibleValueY ? Math.max(maxVisibleValueY, max) : max;
     });
-    return maxVisibleValueY;
+    return [minVisibleValueY, maxVisibleValueY];
   }
 
   getAllPositionsX() {
@@ -67,8 +66,7 @@ class ChartsDataManager {
 
   getCaptionsOnAxisY() {
     const captions = [];
-    const step = Math.round(this.converter.deltaY / 5);
-    for (let i = this.converter.minY; i < this.converter.maxY; i += step) {
+    for (let i = this.converter.minY; i < this.converter.maxY; i += this.converter.stepY) {
       captions.push(i);
     }
     return captions;

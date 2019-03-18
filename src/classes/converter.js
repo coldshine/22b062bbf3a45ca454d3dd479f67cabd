@@ -6,19 +6,22 @@ class Converter {
     this.layout = layout;
     const [minX, maxX] = Utils.getMinMax(valuesX);
     const [minY, maxY] = Utils.getMinMax(valuesY);
+    this.stepY = this._calculateAxisYStep(minY, maxY);
     this.valuesX = valuesX;
     this.valuesY = valuesY;
     this.minX = minX;
     this.maxX = maxX;
-    this.minY = minY;
-    this.maxY = maxY;
-    this.deltaX = maxX - minX;
-    this.deltaY = maxY - minY;
+    this.minY = this._calculateMinY(minY);
+    this.maxY = this._calculateMaxY(maxY);
+    this.deltaX = this.maxX - this.minX;
+    this.deltaY = this.maxY - this.minY;
     this.scaleX = 1;
     this.scaleY = 1;
     this.offsetX = 0;
     this.translateX = 0;
     this.translateY = 0;
+    this.yAxisMinLinesCount = 4;
+    this.yAxisMaxLinesCount = 7;
   }
 
   setVisibleRange(visibleRange) {
@@ -29,9 +32,11 @@ class Converter {
     this.translateX = from * this.layout.width * this.scaleX;
   }
 
-  setMaxVisibleValueY(maxY) {
-    this.maxY = maxY;
-    this.deltaY = maxY - this.minY;
+  setMinMaxY(minY, maxY) {
+    this.stepY = this._calculateAxisYStep(minY, maxY);
+    this.minY = this._calculateMinY(minY);
+    this.maxY = this._calculateMaxY(maxY);
+    this.deltaY = this.maxY - this.minY;
   }
 
   coordsToPxPosition(x, y) {
@@ -46,13 +51,36 @@ class Converter {
   }
 
   yCoordToYPxPosition(y) {
-    y = this.maxY - y; // y should be inverted since order is from the bottom to the top
+    y = this.maxY - y + this.minY; // y should be inverted since order is from the bottom to the top
     return this._coordToPxPosition(y, this.minY, this.deltaY, this.layout.height, this.layout.offsetTop - this.translateY, this.scaleY);
   }
 
   pxPositionXToValueX(x) {
     const coords = this._pxPositionToCoord(x, this.minX, this.deltaX, this.layout.width, this.offsetX, this.scaleX);
     return this.valuesX.findClosestValue(coords); // since chart value is discreet we have to find the exact chart value by pixel position and the look for real closest chart value;
+  }
+
+  _calculateAxisYStep(minY, maxY) {
+    const deltaY = maxY - minY;
+    let step = Math.pow(10, deltaY.toString().length - 1); // bit depth
+    const depthDiff = deltaY / step;
+    const multiplier = 2;
+    if (!depthDiff.between(this.yAxisMinLinesCount, this.yAxisMaxLinesCount, true)) {
+      if (depthDiff  < this.yAxisMinLinesCount) {
+        step /= multiplier;
+      } else if (depthDiff  > this.yAxisMaxLinesCount) {
+        step *= multiplier;
+      }
+    }
+    return step;
+  }
+
+  _calculateMinY(minY) {
+    return Math.floor(minY / this.stepY) * this.stepY;
+  }
+
+  _calculateMaxY(maxY) {
+    return Math.ceil(maxY / this.stepY) * this.stepY;
   }
 
   /**
