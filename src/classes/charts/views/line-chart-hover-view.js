@@ -1,5 +1,3 @@
-import { ctx } from '../../canvas';
-
 class LineChartHover {
 
   constructor(data) {
@@ -13,7 +11,7 @@ class LineChartHover {
     this.hoverY = y || null;
   }
 
-  draw() {
+  draw(ctx) {
     if (this.hoverX > 0 && this.hoverY > 0) {
       ctx.save();
       ctx.strokeStyle = this.data.color;

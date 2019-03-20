@@ -1,9 +1,7 @@
+import Config from '../json/config';
 import Data from '../json/data';
 import MainView from './views/main-view';
 import NavigationView from './views/navigation-view';
-import { canvas, ctx } from './canvas';
-
-const chartData = Data[2];
 
 Number.prototype.between = function (a, b, inclusive) {
   const min = Math.min(a, b);
@@ -19,13 +17,50 @@ Array.prototype.findClosestValue = function (search) {
 class App {
 
   constructor(chartData) {
-    this.main = new MainView(chartData);
-    this.navigation = new NavigationView(chartData);
+    this._init(chartData);
     this._draw();
   }
 
+  _init(chartData) {
+    const button = document.createElement('button');
+    button.innerHTML = 'Chart ' + (chartData.index + 1);
+    document.getElementById('navigation').appendChild(button);
+    const {ctx, canvas} = this._createCanvas();
+    document.getElementById('canvases').appendChild(canvas);
+
+    this.ctx = ctx;
+    this.canvas = canvas;
+    this.main = new MainView(canvas, ctx, chartData);
+    this.navigation = new NavigationView(canvas, ctx, chartData);
+  }
+
+  _createCanvas() {
+    const scaleFactor = 1;
+
+    const canvas = document.createElement('canvas');
+    const {width, height, offsetTop, offsetLeft} = Config.layout.canvas;
+    canvas.width = width * scaleFactor;
+    canvas.height = height * scaleFactor;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    canvas.style.top = offsetTop + 'px';
+    canvas.style.left = offsetLeft + 'px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scaleFactor, scaleFactor);
+
+    let boundingClientRect = canvas.getBoundingClientRect();
+    window.addEventListener('resize', () => boundingClientRect = canvas.getBoundingClientRect());
+
+    return {
+      canvas,
+      ctx,
+      boundingClientRect
+    }
+  }
+
   _clear() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   _draw() {
@@ -36,4 +71,7 @@ class App {
   }
 }
 
-export default new App(chartData);
+Data.forEach((chartData, index) => {
+  chartData.index = index;
+  new App(chartData);
+});

@@ -17,12 +17,12 @@ module.exports = (env, options) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: 'index.html'
+        template: './src/html/index.html'
       })
     ],
     output: {
       filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'assets')
+      path: path.resolve(__dirname, 'build')
     }
   };
   if (options.mode !== 'production') {

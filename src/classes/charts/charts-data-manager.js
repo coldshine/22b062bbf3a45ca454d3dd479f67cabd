@@ -6,7 +6,6 @@ class ChartsDataManager {
   constructor(chartData) {
     this.chartsData = chartData;
     this.converter = null;
-    this.visibleRange = null;
   }
 
   setLayout(layout) {
@@ -14,7 +13,6 @@ class ChartsDataManager {
   }
 
   setVisibleRange(visibleRange) {
-    this.visibleRange = visibleRange;
     this.converter.setVisibleRange(visibleRange);
     this.converter.setMinMaxY(...this.getMinMaxVisibleValueY(visibleRange));
   }

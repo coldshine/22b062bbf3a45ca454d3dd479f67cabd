@@ -1,5 +1,3 @@
-import { ctx } from '../../canvas';
-
 class LineChart {
 
   constructor(data) {
@@ -8,11 +6,11 @@ class LineChart {
     this.targetY = [];
   }
 
-  draw() {
+  draw(ctx) {
     if (this._needAnimation()) {
       this._animate();
     }
-    this._drawLine();
+    this._drawLine(ctx);
   }
 
   updatePositions(positionsX, positionsY) {
@@ -51,7 +49,7 @@ class LineChart {
     return this.targetY.length;
   }
 
-  _drawLine() {
+  _drawLine(ctx) {
     ctx.save();
     ctx.lineWidth = 2;
     ctx.strokeStyle = this.data.color;

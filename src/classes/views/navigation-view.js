@@ -1,13 +1,15 @@
-import { boundingClientRect, canvas, ctx } from '../canvas';
 import Config from '../../json/config';
 import ChartsFactory from '../charts/charts-factory';
 import { getVisibleRange, updateVisibleRange } from '../charts/charts-visible-range';
 
 export default class {
 
-  constructor(chartsData) {
+  constructor(canvas, ctx, chartsData) {
     const [visibleRangeFrom, visibleRangeTo] = getVisibleRange();
-    this.chartsFactory = (new ChartsFactory())
+    this.canvas = canvas;
+    this.ctx = ctx;
+    this.boundingClientRect = canvas.getBoundingClientRect();
+    this.chartsFactory = (new ChartsFactory(canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.navigation)
     ;
@@ -22,12 +24,12 @@ export default class {
     this.prevRightBorderMoveMouseX = null;
     this.deltaLeftBorderMoveMouseX = 0;
     this.deltaRightBorderMoveMouseX = 0;
-    this.minVisibleRangeDelta = 100;
+    this.minVisibleRangeDelta = 60;
     this.bindEvents();
   }
 
   bindEvents() {
-    canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
+    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
     document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
     document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
   }
@@ -153,7 +155,7 @@ export default class {
   }
 
   _isMouseYInsideLayout(mouseY) {
-    return mouseY.between(Config.layout.navigation.offsetTop, boundingClientRect.height);
+    return mouseY.between(Config.layout.navigation.offsetTop, this.boundingClientRect.height);
   }
 
   _getIncreasingDelta(delta) {
@@ -173,14 +175,14 @@ export default class {
   }
 
   _getMouseLocalPosition(e) {
-    const mouseX = Math.round(e.clientX - boundingClientRect.left);
-    const mouseY = Math.round(e.clientY - boundingClientRect.top);
+    const mouseX = Math.round(e.clientX - this.boundingClientRect.left);
+    const mouseY = Math.round(e.clientY - this.boundingClientRect.top);
     return [mouseX, mouseY];
   }
 
   draw() {
     this.drawHandler();
-    this.charts.forEach((chart) => chart.draw());
+    this.charts.forEach((chart) => chart.draw(this.ctx));
     this.drawCover();
   }
 
@@ -194,32 +196,32 @@ export default class {
 
   drawHandlerTopBottom(offsetTop) {
     const height = 3;
-    ctx.save();
-    ctx.fillStyle = 'rgba(234,255,221,1)';
-    ctx.beginPath();
-    ctx.rect(
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(234,255,221,1)';
+    this.ctx.beginPath();
+    this.ctx.rect(
       this.rangeFromPx,
       offsetTop,
       this.rangeToPx - this.rangeFromPx,
       height
     );
-    ctx.fill();
-    ctx.restore();
+    this.ctx.fill();
+    this.ctx.restore();
   }
 
   drawHandlerSide(x) {
     const width = 5;
-    ctx.save();
-    ctx.fillStyle = 'rgba(234,255,221,1)';
-    ctx.beginPath();
-    ctx.rect(
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(234,255,221,1)';
+    this.ctx.beginPath();
+    this.ctx.rect(
       x,
       Config.layout.navigation.offsetTop,
       width,
       Config.layout.navigation.height
     );
-    ctx.fill();
-    ctx.restore();
+    this.ctx.fill();
+    this.ctx.restore();
   }
 
   drawCover() {
@@ -236,17 +238,17 @@ export default class {
   }
 
   drawCoverPart(offsetLeft, width) {
-    ctx.save();
-    ctx.fillStyle = 'rgba(234,255,221,0.5)';
-    ctx.beginPath();
-    ctx.rect(
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(234,255,221,0.5)';
+    this.ctx.beginPath();
+    this.ctx.rect(
       offsetLeft,
       Config.layout.navigation.offsetTop,
       width,
       Config.layout.navigation.height
     );
-    ctx.fill();
-    ctx.restore();
+    this.ctx.fill();
+    this.ctx.restore();
   }
 
 }

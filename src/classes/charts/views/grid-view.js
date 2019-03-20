@@ -1,4 +1,3 @@
-import { ctx } from '../../canvas';
 import Utils from '../../utils';
 import Config from '../../../json/config';
 
@@ -6,7 +5,7 @@ class GridView {
 
   constructor(positionsX, captionsX, positionsY, captionsY, layout) {
     const sidePadding = 10;
-    const minSpaceBetweenGridLineX = 30;
+    this.minSpaceBetweenGridLineX = 80;
 
     this.layout = layout;
     this.positionsX = positionsX;
@@ -17,15 +16,29 @@ class GridView {
     this.maxX = this.layout.offsetLeft + this.layout.width - sidePadding;
     this.minY = this.layout.offsetTop + this.layout.height;
     this.maxY = this.layout.offsetTop;
-    this.stepX = minSpaceBetweenGridLineX / (this.positionsX[1] - this.positionsX[0]);
+    this.opacititesX = this.calcOpacitiesX();
     this.animationTime = 5;
     this.hoverPositionX = null;
     this.targetPositionsY = [];
+    this.targetOpacititesX = [];
+  }
+
+  calcOpacitiesX() {
+    let stepX = Math.ceil(this.minSpaceBetweenGridLineX / (this.positionsX[1] - this.positionsX[0]));
+    const progression = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]; // toDo refactor this
+    stepX = progression.findClosestValue(stepX);
+    const opacities = Array(this.positionsX.length).fill(0);
+    for (let i = 0; i <= this.positionsX.length; i+=stepX) {
+      opacities[i] = 1;
+    }
+    return opacities;
   }
 
   updatePositions(newPositionsX, newPositionsY, newCaptionsY) {
     this.positionsX = newPositionsX.slice(0);
     this.targetPositionsY = newPositionsY.slice(0);
+
+    this.targetOpacititesX = this.calcOpacitiesX();
 
     const captionsY = newCaptionsY.slice(0);
     const targetPositionsY = newPositionsY.slice(0);
@@ -79,19 +92,44 @@ class GridView {
     this.hoverPositionX = hoverPositionX;
   }
 
-  draw() {
-    if (this._needAnimation()) {
-      this._animate();
+  draw(ctx) {
+    if (this._needAnimationX()) {
+      this._animateX();
     }
-    this._drawGridY();
-    this._drawBottomSquare();
-    this._drawGridX(true);
+    if (this._needAnimationY()) {
+      this._animateY();
+    }
+    this._drawGridY(ctx);
+    this._drawBottomSquare(ctx);
+    this._drawGridX(ctx, true);
     if (this.hoverPositionX !== null) {
-      this._drawVerticalGridLine(this.hoverPositionX);
+      this._drawVerticalGridLine(ctx, this.hoverPositionX);
     }
   }
 
-  _animate() {
+  _animateX() {
+    let inProgress = false;
+    this.opacititesX = this.opacititesX.map((opacity, i) => {
+      const targetOpacity = this.targetOpacititesX[i];
+      const delta = targetOpacity - opacity;
+      let increment = delta / this.animationTime;
+      if (delta !== 0) {
+        inProgress = true;
+        if (delta > 0) {
+          increment = Math.min(increment, delta);
+        } else if (delta < 0) {
+          increment = Math.max(increment, delta);
+        }
+        opacity += increment;
+      }
+      return opacity;
+    });
+    if (!inProgress) {
+      this.targetOpacititesX = [];
+    }
+  }
+
+  _animateY() {
     let inProgress = false;
     this.positionsY = this.positionsY.map((position, i) => {
       const targetPosition = this.targetPositionsY[i];
@@ -113,39 +151,44 @@ class GridView {
     }
   }
 
-  _needAnimation() {
+  _needAnimationX() {
+    return this.targetOpacititesX.length;
+  }
+
+  _needAnimationY() {
     return this.targetPositionsY.length;
   }
 
-  _drawGridX(hideLines = false) {
-    for (let i = 0; i <= this.positionsX.length; i += this.stepX) {
+  _drawGridX(ctx, hideLines = false) {
+    for (let i = 0; i <= this.positionsX.length; i++) {
       const positionX = this.positionsX[i];
       const caption = this.captionsX[i];
+      const opacity = this.opacititesX[i];
       if (!hideLines) {
-        this._drawVerticalGridLine(positionX)
+        this._drawVerticalGridLine(ctx, positionX)
       }
-      this._drawGridText(caption, positionX, this.minY + 20, 'center');
+      this._drawGridText(ctx, caption, positionX, this.minY + 20, 'center', opacity);
     }
   }
 
-  _drawGridY() {
+  _drawGridY(ctx) {
     for (let i = 0; i <= this.positionsY.length; i ++) {
       const positionY = this.positionsY[i];
       const caption = this.captionsY[i];
-      this._drawHorizontalGridLine(positionY);
-      this._drawGridText(caption, this.minX, positionY - 10, 'left');
+      this._drawHorizontalGridLine(ctx, positionY);
+      this._drawGridText(ctx, caption, this.minX, positionY - 10, 'left');
     }
   }
 
-  _drawHorizontalGridLine(y) {
-    this._drawGridLine(this.minX, y, this.maxX, y);
+  _drawHorizontalGridLine(ctx, y) {
+    this._drawGridLine(ctx, this.minX, y, this.maxX, y);
   }
 
-  _drawVerticalGridLine(x) {
-    this._drawGridLine(x, this.maxY, x, this.minY);
+  _drawVerticalGridLine(ctx, x) {
+    this._drawGridLine(ctx, x, this.maxY, x, this.minY);
   }
 
-  _drawGridLine(fromX, fromY, toX, toY) {
+  _drawGridLine(ctx, fromX, fromY, toX, toY) {
     ctx.save();
     ctx.strokeStyle = 'rgba(209,209,209,1)';
     ctx.lineWidth = 1;
@@ -157,17 +200,17 @@ class GridView {
     ctx.restore();
   }
 
-  _drawGridText(text, x, y, align) {
+  _drawGridText(ctx, text, x, y, align, opacity = 1) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(0,0,0,1)';
-    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.strokeStyle = `rgba(0,0,0,${opacity})`;
+    ctx.fillStyle = `rgba(0,0,0,${opacity})`;
     ctx.lineWidth = 1;
     ctx.textAlign = align;
     ctx.fillText(text, x, y);
     ctx.restore();
   }
 
-  _drawBottomSquare() {
+  _drawBottomSquare(ctx) {
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,1)';
     ctx.fillStyle = 'rgba(255,255,255,1)';

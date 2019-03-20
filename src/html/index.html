@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram contest</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto 50px;
+      /* border: 1px solid #c5c5c5; */
+    }
+    #navigation {
+      position: fixed;
+      top: 50%;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(-50%);
+    }
+    #navigation button {
+      border: none;
+    }
+    button {
+      border: 1px solid #aeaeae;
+      background: none;
+      cursor: pointer;
+      border-radius: 30px;
+      font-size: 20px;
+      margin-bottom: 20px;
+      padding: 15px;
+      outline: none;
+      opacity: 0.8;
+    }
+    button:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="navigation">
+  </div>
+  <div id="canvases">
+  </div>
+</body>
+</html>

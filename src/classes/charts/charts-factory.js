@@ -1,13 +1,13 @@
 import LineChartView from './views/line-chart-view';
 import LineChartHoverView from './views/line-chart-hover-view';
 import GridView from './views/grid-view';
-import { boundingClientRect } from '../canvas';
 import ChartsDataManager from './charts-data-manager';
 import Tooltip from '../views/tooltip-view';
 
 class ChartsFactory {
 
-  constructor() {
+  constructor(canvas) {
+    this.boundingClientRect = canvas.getBoundingClientRect();
     this.dataManager = null;
     this.hasHover = false;
     this.charts = [];
@@ -108,8 +108,8 @@ class ChartsFactory {
   }
 
   _onMouseMove(e) {
-    const mouseX = Math.round(e.clientX - boundingClientRect.left);
-    const mouseY = Math.round(e.clientY - boundingClientRect.top);
+    const mouseX = Math.round(e.clientX - this.boundingClientRect.left);
+    const mouseY = Math.round(e.clientY - this.boundingClientRect.top);
     this._handleMouseMove(mouseX, mouseY);
   }
 

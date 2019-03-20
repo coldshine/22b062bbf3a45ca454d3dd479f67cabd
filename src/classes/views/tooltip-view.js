@@ -1,5 +1,4 @@
 import Config from '../../json/config';
-import { ctx } from '../canvas';
 
 class Tooltip {
 
@@ -21,14 +20,14 @@ class Tooltip {
     this.hoverPositionX = hoverPositionX;
   }
 
-  draw() {
+  draw(ctx) {
     if (this.hoverPositionX !== null && this.hoverValueX !== null) {
-      this._drawSquare(this.hoverPositionX);
-      this._drawText(this.hoverPositionX, this.hoverValueX);
+      this._drawSquare(ctx, this.hoverPositionX);
+      this._drawText(ctx, this.hoverPositionX, this.hoverValueX);
     }
   }
 
-  _drawSquare(x) {
+  _drawSquare(ctx, x) {
     ctx.save();
     const {width, height, offsetTop} = this.layout;
     ctx.strokeStyle = '#bdbdbd';
@@ -40,7 +39,7 @@ class Tooltip {
     ctx.restore();
   }
 
-  _drawText(x, caption) {
+  _drawText(ctx, x, caption) {
     let {offsetTop} = this.layout;
     offsetTop += 10;
     ctx.save();

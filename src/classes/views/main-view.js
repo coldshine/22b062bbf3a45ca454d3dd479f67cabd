@@ -4,14 +4,15 @@ import { getVisibleRange, subscribe } from '../charts/charts-visible-range';
 
 export default class {
 
-  constructor(chartsData) {
+  constructor(canvas, ctx, chartsData) {
     const visibleRange = getVisibleRange();
-    this.chartsFactory = (new ChartsFactory())
+    this.chartsFactory = (new ChartsFactory(canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
       .enableHover()
       .setVisibleRange(visibleRange)
     ;
+    this.ctx = ctx;
     this.charts = this.chartsFactory.createCharts();
     this.grid = this.chartsFactory.createGrid();
     this.tooltip = this.chartsFactory.createTooltip();
@@ -19,9 +20,9 @@ export default class {
   }
 
   draw() {
-    this.grid.draw();
-    this.charts.forEach((chart) => chart.draw());
-    this.tooltip.draw();
+    this.grid.draw(this.ctx);
+    this.charts.forEach((chart) => chart.draw(this.ctx));
+    this.tooltip.draw(this.ctx);
   }
 
   _bindEvents() {
