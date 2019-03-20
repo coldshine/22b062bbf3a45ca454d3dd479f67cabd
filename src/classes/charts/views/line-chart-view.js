@@ -12,20 +12,12 @@ class LineChart {
     if (this._needAnimation()) {
       this._animate();
     }
-    this._drawChart();
+    this._drawLine();
   }
 
   updatePositions(positionsX, positionsY) {
-    this._updateX(positionsX);
-    this._updateY(positionsY);
-  }
-
-  _updateX(positionsX) {
     this.data.positionsX = positionsX.slice(0);
-  }
-
-  _updateY(positionsY) {
-    this.targetY = positionsY.slice(0);
+    this.targetY = positionsY.slice(0); // target for animation
   }
 
   _animate() {
@@ -59,7 +51,7 @@ class LineChart {
     return this.targetY.length;
   }
 
-  _drawChart() {
+  _drawLine() {
     ctx.save();
     ctx.lineWidth = 2;
     ctx.strokeStyle = this.data.color;

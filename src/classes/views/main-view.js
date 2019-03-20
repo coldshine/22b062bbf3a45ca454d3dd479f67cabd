@@ -1,11 +1,11 @@
 import Config from '../../json/config';
 import ChartsFactory from '../charts/charts-factory';
-import store from '../../redux/store';
+import { getVisibleRange, subscribe } from '../charts/charts-visible-range';
 
 export default class {
 
   constructor(chartsData) {
-    const { visibleRange } = store.getState();
+    const visibleRange = getVisibleRange();
     this.chartsFactory = (new ChartsFactory())
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
@@ -25,11 +25,11 @@ export default class {
   }
 
   _bindEvents() {
-    store.subscribe(() => this.onStoreUpdate());
+    subscribe(() => this.onStoreUpdate());
   }
 
   onStoreUpdate() {
-    const { visibleRange } = store.getState();
+    const visibleRange = getVisibleRange();
     this.chartsFactory.setVisibleRange(visibleRange);
   }
 }
