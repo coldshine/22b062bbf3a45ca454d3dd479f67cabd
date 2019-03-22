@@ -1,9 +1,9 @@
 import Widget from './widget';
 
 class App {
-  constructor() {
+  constructor(data) {
     this.widgets = [];
-    window.DATA.forEach((chartData, index) => {
+    data.forEach((chartData, index) => {
       chartData.index = index;
       this.widgets.push(new Widget(chartData));
     });
