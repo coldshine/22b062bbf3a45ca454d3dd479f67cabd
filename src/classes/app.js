@@ -134,7 +134,7 @@ class App {
   }
 
   _scrollToChart() {
-    this.canvas.scrollIntoView({ behavior: 'smooth'});
+    this.ctx.canvas.scrollIntoView({ behavior: 'smooth'});
   }
 }
 
