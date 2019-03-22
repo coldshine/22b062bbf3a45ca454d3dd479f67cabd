@@ -32,13 +32,12 @@ class App {
 
     const navButton = this._createNavButtons(chartData, chartName);
     this._createChartTitle(chartName);
-    const {ctx, canvas} = this._createCanvas();
+    const ctx = this._createCanvas();
     const chartButtons = this._createChartButtons(names, colors, chartsAmount);
 
     this.ctx = ctx;
-    this.canvas = canvas;
-    this.main = new MainView(canvas, ctx, chartData);
-    this.navigation = new NavigationView(canvas, ctx, chartData);
+    this.main = new MainView(ctx, chartData);
+    this.navigation = new NavigationView(ctx, chartData);
     this.chartButtons = chartButtons;
     this.navButton = navButton;
   }
@@ -54,11 +53,13 @@ class App {
     const ratio = 2;
 
     const canvas = document.createElement('canvas');
-    const {width, height, offsetTop, offsetLeft} = Config.layout.canvas;
-    canvas.width = width * ratio;
-    canvas.height = height * ratio;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+    const {offsetTop, offsetLeft} = Config.layout.canvas;
+    const size = Math.min(Config.layout.canvas.size, document.getElementById('charts').offsetWidth);
+    const sizeScaled = size * ratio;
+    canvas.width = sizeScaled;
+    canvas.height = sizeScaled;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
     canvas.style.top = offsetTop + 'px';
     canvas.style.left = offsetLeft + 'px';
 
@@ -67,7 +68,7 @@ class App {
 
     document.getElementById('charts').appendChild(canvas);
 
-    return { canvas, ctx }
+    return ctx
   }
 
   _createChartTitle(chartName) {
@@ -109,7 +110,7 @@ class App {
   }
 
   _clear() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.ctx.canvas.offsetWidth, this.ctx.canvas.offsetHeight);
   }
 
   _bindEvents() {

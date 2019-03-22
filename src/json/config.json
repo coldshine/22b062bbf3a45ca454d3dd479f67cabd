@@ -1,8 +1,7 @@
 {
   "layout": {
     "canvas": {
-      "width": 600,
-      "height": 600,
+      "size": 600,
       "offsetTop": 0,
       "offsetLeft": 0
     },

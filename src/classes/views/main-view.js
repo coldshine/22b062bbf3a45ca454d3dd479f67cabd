@@ -4,9 +4,9 @@ import { getVisibleRange, subscribe } from '../charts/charts-visible-range';
 
 export default class {
 
-  constructor(canvas, ctx, chartsData) {
+  constructor(ctx, chartsData) {
     const visibleRange = getVisibleRange();
-    this.chartsFactory = (new ChartsFactory(canvas))
+    this.chartsFactory = (new ChartsFactory(ctx.canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
       .enableHover()

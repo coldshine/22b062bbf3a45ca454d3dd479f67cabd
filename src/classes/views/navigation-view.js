@@ -4,11 +4,10 @@ import { getVisibleRange, updateVisibleRange } from '../charts/charts-visible-ra
 
 export default class {
 
-  constructor(canvas, ctx, chartsData) {
+  constructor(ctx, chartsData) {
     const [visibleRangeFrom, visibleRangeTo] = getVisibleRange();
-    this.canvas = canvas;
     this.ctx = ctx;
-    this.chartsFactory = (new ChartsFactory(canvas))
+    this.chartsFactory = (new ChartsFactory(this.ctx.canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.navigation)
     ;
@@ -32,9 +31,9 @@ export default class {
 
   bindEvents() {
     this.clickAndMouseMoveHandler = this.onClickAndMouseMove.bind(this);
-    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-    this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e), false);
-    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+    this.ctx.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
+    this.ctx.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e), false);
+    this.ctx.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
     document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
   }
 
@@ -168,7 +167,7 @@ export default class {
   }
 
   _isMouseYInsideLayout() {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.ctx.canvas.getBoundingClientRect();
     return this.mouseY.between(Config.layout.navigation.offsetTop, rect.height);
   }
 
@@ -189,7 +188,7 @@ export default class {
   }
 
   _actualizeMouseLocalPosition(e) {
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.ctx.canvas.getBoundingClientRect();
     this.mouseX = Math.round(e.clientX - rect.left);
     this.mouseY = Math.round(e.clientY - rect.top);
   }

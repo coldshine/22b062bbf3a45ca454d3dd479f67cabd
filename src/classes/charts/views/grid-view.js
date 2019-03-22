@@ -212,7 +212,7 @@ class GridView {
       Config.layout.main.offsetLeft,
       Config.layout.main.offsetTop + Config.layout.main.height,
       Config.layout.main.width,
-      Config.layout.canvas.height - Config.layout.main.height
+      ctx.canvas.offsetHeight - Config.layout.main.height
     );
     ctx.restore();
   }
