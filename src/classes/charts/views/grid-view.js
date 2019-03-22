@@ -6,7 +6,6 @@ class GridView {
   constructor(positionsX, captionsX, positionsY, captionsY, layout) {
     const sidePadding = 10;
     this.minSpaceBetweenGridLineX = 80;
-
     this.layout = layout;
     this.positionsX = positionsX;
     this.captionsX = captionsX;
@@ -16,6 +15,7 @@ class GridView {
     this.maxX = this.layout.offsetLeft + this.layout.width - sidePadding;
     this.minY = this.layout.offsetTop + this.layout.height;
     this.maxY = this.layout.offsetTop;
+    this.xAxisCaptionPositionY = this.minY + 20;
     this.opacititesX = this.calcOpacitiesX();
     this.animationTime = 5;
     this.hoverPositionX = null;
@@ -167,7 +167,7 @@ class GridView {
       if (!hideLines) {
         this._drawVerticalGridLine(ctx, positionX)
       }
-      this._drawGridText(ctx, caption, positionX, this.minY + 20, 'center', opacity);
+      this._drawGridText(ctx, caption, positionX, this.xAxisCaptionPositionY, 'center', opacity);
     }
   }
 
