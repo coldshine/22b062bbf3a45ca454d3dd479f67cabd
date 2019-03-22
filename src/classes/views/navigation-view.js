@@ -25,48 +25,57 @@ export default class {
     this.deltaRightBorderMoveMouseX = 0;
     this.minVisibleRangeDelta = 60;
     this.index = chartsData.index;
+    this.mouseX = null;
+    this.mouseY = null;
     this.bindEvents();
   }
 
   bindEvents() {
+    this.clickAndMouseMoveHandler = this.onClickAndMouseMove.bind(this);
     this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
     this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e), false);
+    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
     document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
   }
 
   onMouseDown(e) {
-    const [mouseX, mouseY] = this._getMouseLocalPosition(e);
-    this.prevLeftBorderMoveMouseX = this._isMouseOnLeftRangeBorder(mouseX, mouseY) ? mouseX : null;
-    this.prevRightBorderMoveMouseX = this._isMouseOnRightRangeBorder(mouseX, mouseY) ? mouseX : null;
+    document.addEventListener('mousemove', this.clickAndMouseMoveHandler, false);
+    this._actualizeMouseLocalPosition(e);
+    this.prevLeftBorderMoveMouseX = this._isMouseOnLeftRangeBorder() ? this.mouseX : null;
+    this.prevRightBorderMoveMouseX = this._isMouseOnRightRangeBorder() ? this.mouseX : null;
     if (!(this.prevLeftBorderMoveMouseX || this.prevRightBorderMoveMouseX)) {
-      this.prevRangeMoveMouseX = this._isMouseOnRange(mouseX, mouseY) ? mouseX : null;
+      this.prevRangeMoveMouseX = this._isMouseOnRange() ? this.mouseX : null;
     }
   }
 
   onMouseMove(e) {
+    this._actualizeMouseLocalPosition(e);
+    document.body.style.cursor = this._isMouseOnRangeBorder()  ? 'ew-resize' :
+      this._isMouseOnRange() ? 'grab' : 'default';
+  }
+
+  onClickAndMouseMove(e) {
     const isMouseOut = this._isMouseOutsideOfPage(e);
-    const [mouseX, mouseY] = this._getMouseLocalPosition(e);
-    document.body.style.cursor = this._isMouseOnRangeBorder(mouseX, mouseY)  ? 'ew-resize' : this._isMouseOnRange(mouseX, mouseY) ? 'grab' : 'default';
+    this._actualizeMouseLocalPosition(e);
     if (this.prevRangeMoveMouseX) {
-      this.deltaRangeMoveMouseX = mouseX - this.prevRangeMoveMouseX;
+      this.deltaRangeMoveMouseX = this.mouseX - this.prevRangeMoveMouseX;
       this._handleRangeMove();
       if (!isMouseOut) {
-        this.prevRangeMoveMouseX = mouseX;
+        this.prevRangeMoveMouseX = this.mouseX;
       }
     }
     if (this.prevLeftBorderMoveMouseX) {
-      this.deltaLeftBorderMoveMouseX = mouseX - this.prevLeftBorderMoveMouseX;
+      this.deltaLeftBorderMoveMouseX = this.mouseX - this.prevLeftBorderMoveMouseX;
       this._handleRangeLeftBorderMove();
       if (!isMouseOut) {
-        this.prevLeftBorderMoveMouseX = mouseX;
+        this.prevLeftBorderMoveMouseX = this.mouseX;
       }
     }
     if (this.prevRightBorderMoveMouseX) {
-      this.deltaRightBorderMoveMouseX = mouseX - this.prevRightBorderMoveMouseX;
+      this.deltaRightBorderMoveMouseX = this.mouseX - this.prevRightBorderMoveMouseX;
       this._handleRangeRightBorderMove();
       if (!isMouseOut) {
-        this.prevRightBorderMoveMouseX = mouseX;
+        this.prevRightBorderMoveMouseX = this.mouseX;
       }
     }
   }
@@ -76,6 +85,7 @@ export default class {
   }
 
   onMouseUp() {
+    document.removeEventListener('mousemove', this.clickAndMouseMoveHandler, false);
     this.prevRangeMoveMouseX = null;
     this.prevLeftBorderMoveMouseX = null;
     this.prevRightBorderMoveMouseX = null;
@@ -105,8 +115,7 @@ export default class {
     let delta;
     if (this.deltaLeftBorderMoveMouseX > 0) {
       // move right
-      delta = this._getIncreasingDelta(this.deltaLeftBorderMoveMouseX);
-      delta = Math.min(delta, this.rangeToPx - this.minVisibleRangeDelta - this.rangeFromPx);
+      delta = Math.min(this.deltaLeftBorderMoveMouseX, this.rangeToPx - this.minVisibleRangeDelta - this.rangeFromPx);
       this.rangeFromPx+=delta;
       this._updateRange();
     } else if (this.deltaLeftBorderMoveMouseX < 0) {
@@ -126,8 +135,7 @@ export default class {
       this._updateRange();
     } else if (this.deltaRightBorderMoveMouseX < 0) {
       // move left
-      delta = this._getDecreasingDelta(this.deltaRightBorderMoveMouseX);
-      delta = Math.max(delta, -(this.rangeToPx - this.rangeFromPx - this.minVisibleRangeDelta));
+      delta = Math.max(this.deltaRightBorderMoveMouseX, -(this.rangeToPx - this.rangeFromPx - this.minVisibleRangeDelta));
       this.rangeToPx+=delta;
       this._updateRange();
     }
@@ -139,29 +147,29 @@ export default class {
     updateVisibleRange(this.index, from, to);
   }
 
-  _isMouseOnRange(mouseX, mouseY) {
-    return mouseX.between(this.rangeFromPx, this.rangeToPx) && this._isMouseYInsideLayout(mouseY);
+  _isMouseOnRange() {
+    return this.mouseX.between(this.rangeFromPx, this.rangeToPx) && this._isMouseYInsideLayout();
   }
 
-  _isMouseOnRangeBorder(mouseX, mouseY) {
-    return this._isMouseOnLeftRangeBorder(mouseX, mouseY) || this._isMouseOnRightRangeBorder(mouseX, mouseY);
+  _isMouseOnRangeBorder() {
+    return this._isMouseOnLeftRangeBorder() || this._isMouseOnRightRangeBorder();
   }
 
-  _isMouseOnLeftRangeBorder(mouseX, mouseY) {
-    return mouseX.between(this.rangeFromPx - this.mouseBorderWidthHalf, this.rangeFromPx + this.mouseBorderWidthHalf) && this._isMouseYInsideLayout(mouseY);
+  _isMouseOnLeftRangeBorder() {
+    return this.mouseX.between(this.rangeFromPx - this.mouseBorderWidthHalf, this.rangeFromPx + this.mouseBorderWidthHalf) && this._isMouseYInsideLayout();
   }
 
-  _isMouseOnRightRangeBorder(mouseX, mouseY) {
-    return mouseX.between(this.rangeToPx - this.mouseBorderWidthHalf, this.rangeToPx + this.mouseBorderWidthHalf) && this._isMouseYInsideLayout(mouseY);
+  _isMouseOnRightRangeBorder() {
+    return this.mouseX.between(this.rangeToPx - this.mouseBorderWidthHalf, this.rangeToPx + this.mouseBorderWidthHalf) && this._isMouseYInsideLayout();
   }
 
   _isMouseOutsideOfPage(e) {
     return e.clientY <= 0 || e.clientX <= 0 || (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight);
   }
 
-  _isMouseYInsideLayout(mouseY) {
+  _isMouseYInsideLayout() {
     const rect = this.canvas.getBoundingClientRect();
-    return mouseY.between(Config.layout.navigation.offsetTop, rect.height);
+    return this.mouseY.between(Config.layout.navigation.offsetTop, rect.height);
   }
 
   _getIncreasingDelta(delta) {
@@ -180,11 +188,10 @@ export default class {
     return px / Config.layout.navigation.width;
   }
 
-  _getMouseLocalPosition(e) {
+  _actualizeMouseLocalPosition(e) {
     const rect = this.canvas.getBoundingClientRect();
-    const mouseX = Math.round(e.clientX - rect.left);
-    const mouseY = Math.round(e.clientY - rect.top);
-    return [mouseX, mouseY];
+    this.mouseX = Math.round(e.clientX - rect.left);
+    this.mouseY = Math.round(e.clientY - rect.top);
   }
 
   draw() {

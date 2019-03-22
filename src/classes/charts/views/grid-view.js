@@ -183,7 +183,7 @@ class GridView {
   _drawHorizontalGridLine(ctx, y) {
     ctx.save();
     ctx.fillStyle = Config.colors.greyLine;
-    ctx.fillRect(this.minX, y, this.maxX, 1);
+    ctx.fillRect(this.minX, y - 1, this.maxX, 1);
     ctx.restore();
   }
 
