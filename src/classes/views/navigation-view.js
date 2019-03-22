@@ -79,7 +79,7 @@ export default class {
     }
   }
 
-  onMouseLeave(e) {
+  onMouseLeave() {
     document.body.style.cursor = 'default';
   }
 
@@ -112,14 +112,17 @@ export default class {
 
   _handleRangeLeftBorderMove() {
     let delta;
+    let needUpdate = false;
     if (this.deltaLeftBorderMoveMouseX > 0) {
       // move right
       delta = Math.min(this.deltaLeftBorderMoveMouseX, this.rangeToPx - this.minVisibleRangeDelta - this.rangeFromPx);
-      this.rangeFromPx+=delta;
-      this._updateRange();
+      needUpdate = true;
     } else if (this.deltaLeftBorderMoveMouseX < 0) {
       // move left
       delta = this._getDecreasingDelta(this.deltaLeftBorderMoveMouseX);
+      needUpdate = true;
+    }
+    if (needUpdate) {
       this.rangeFromPx+=delta;
       this._updateRange();
     }
@@ -127,14 +130,17 @@ export default class {
 
   _handleRangeRightBorderMove() {
     let delta;
+    let needUpdate = false;
     if (this.deltaRightBorderMoveMouseX > 0) {
       // move right
       delta = this._getIncreasingDelta(this.deltaRightBorderMoveMouseX);
-      this.rangeToPx+=delta;
-      this._updateRange();
+      needUpdate = true;
     } else if (this.deltaRightBorderMoveMouseX < 0) {
       // move left
       delta = Math.max(this.deltaRightBorderMoveMouseX, -(this.rangeToPx - this.rangeFromPx - this.minVisibleRangeDelta));
+      needUpdate = true;
+    }
+    if (needUpdate) {
       this.rangeToPx+=delta;
       this._updateRange();
     }

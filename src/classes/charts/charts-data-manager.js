@@ -79,6 +79,13 @@ class ChartsDataManager {
         minVisibleValueY = minVisibleValueY ? Math.min(minVisibleValueY, min) : min;
         maxVisibleValueY = maxVisibleValueY ? Math.max(maxVisibleValueY, max) : max;
       });
+    if (!minVisibleValueY) {
+      minVisibleValueY = 0;
+    }
+    if (!maxVisibleValueY) {
+      const [minY, maxY] = Utils.getMinMax(this.getAllValuesY());
+      maxVisibleValueY = maxY;
+    }
     return [minVisibleValueY, maxVisibleValueY];
   }
 
