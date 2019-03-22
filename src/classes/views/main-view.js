@@ -1,4 +1,4 @@
-import Config from '../../json/config';
+import Config from '../../config';
 import ChartsFactory from '../charts/charts-factory';
 import { getVisibleRange, subscribe } from '../charts/charts-visible-range';
 

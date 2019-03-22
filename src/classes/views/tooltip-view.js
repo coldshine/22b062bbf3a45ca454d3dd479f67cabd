@@ -1,4 +1,4 @@
-import Config from '../../json/config';
+import Config from '../../config';
 
 class Tooltip {
 

@@ -5,6 +5,7 @@ const webpack = require('webpack');
 module.exports = (env, options) => {
   let config = {
     entry: {
+      data: './src/data.js',
       app: './src/index.js'
     },
     module: {

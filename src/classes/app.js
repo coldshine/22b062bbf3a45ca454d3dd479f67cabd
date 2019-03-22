@@ -1,5 +1,4 @@
-import Config from '../json/config';
-import Data from '../json/data';
+import Config from '../config';
 import MainView from './views/main-view';
 import NavigationView from './views/navigation-view';
 import ChartsDataManager from './charts/charts-data-manager';
@@ -138,7 +137,7 @@ class App {
   }
 }
 
-Data.forEach((chartData, index) => {
+window.DATA.forEach((chartData, index) => {
   chartData.index = index;
   new App(chartData);
 });
