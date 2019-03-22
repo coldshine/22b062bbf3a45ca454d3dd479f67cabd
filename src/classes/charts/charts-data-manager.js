@@ -6,6 +6,8 @@ class ChartsDataManager {
   constructor(chartData) {
     this.chartsData = chartData;
     this.converter = null;
+    this.visibleRange = [0, 1];
+    this.visibleCharts = [];
   }
 
   setLayout(layout) {
@@ -13,16 +15,43 @@ class ChartsDataManager {
   }
 
   setVisibleRange(visibleRange) {
+    this.visibleRange = visibleRange;
     this.converter.setVisibleRange(visibleRange);
-    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY(visibleRange));
+    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY());
   }
 
-  getNormalizedChartsDataAll() {
+  getNormalizedChartsData() {
     const result = [];
     for (let chartIndex = 0; chartIndex < this.getChartsAmount(); chartIndex++) {
       result.push(this.prepareChartData(chartIndex));
     }
     return result;
+  }
+
+  getBaseName() {
+    return 'Chart ' + (this.chartsData.index + 1);
+  }
+
+  getNames() {
+    const names = [];
+    this.chartsData.columns.forEach((column) => {
+      const columnIndex = column[0];
+      if (this.chartsData.names[columnIndex]) {
+        names.push(this.chartsData.names[columnIndex]);
+      }
+    });
+    return names;
+  }
+
+  getColors() {
+    const colors = [];
+    this.chartsData.columns.forEach((column) => {
+      const columnIndex = column[0];
+      if (this.chartsData.colors[columnIndex]) {
+        colors.push(this.chartsData.colors[columnIndex]);
+      }
+    });
+    return colors;
   }
 
   getAllValuesX() {
@@ -36,26 +65,32 @@ class ChartsDataManager {
     return allValuesY;
   }
 
-  getMinMaxVisibleValueY(visibleRange) {
-    const [from, to] = visibleRange;
+  getMinMaxVisibleValueY() {
+    const [from, to] = this.visibleRange;
     let minVisibleValueY = null;
     let maxVisibleValueY = null;
-    this.getNormalizedChartsDataAll().forEach((chart) => {
-      const indexFrom = Math.floor(chart.valuesY.length * from);
-      const indexTo = Math.ceil(chart.valuesY.length * to);
-      const valuesY = chart.valuesY.slice(indexFrom, indexTo);
-      const [min, max] = Utils.getMinMax(valuesY);
-      minVisibleValueY = minVisibleValueY ? Math.min(minVisibleValueY, min) : min;
-      maxVisibleValueY = maxVisibleValueY ? Math.max(maxVisibleValueY, max) : max;
-    });
+    this.getNormalizedChartsData()
+      .filter((chart) => chart.visible)
+      .forEach((chart) => {
+        const indexFrom = Math.floor(chart.valuesY.length * from);
+        const indexTo = Math.ceil(chart.valuesY.length * to);
+        const valuesY = chart.valuesY.slice(indexFrom, indexTo);
+        const [min, max] = Utils.getMinMax(valuesY);
+        minVisibleValueY = minVisibleValueY ? Math.min(minVisibleValueY, min) : min;
+        maxVisibleValueY = maxVisibleValueY ? Math.max(maxVisibleValueY, max) : max;
+      });
     return [minVisibleValueY, maxVisibleValueY];
   }
 
-  getAllPositionsX() {
+  getPositionsOnAxisX() {
     return this.getAllValuesX().map((x) => this.converter.xCoordToXPxPosition(x));
   }
 
-  getAllCaptionsX() {
+  getPositionsOnAxisY() {
+    return this.getCaptionsOnAxisY().map((y) => this.converter.yCoordToYPxPosition(y));
+  }
+
+  getCaptionsOnAxisX() {
     return this.getAllValuesX().map((x) => {
       const date = new Date(x);
       return Utils.formatMonth(date.getMonth()) + ' ' + date.getDate();
@@ -68,10 +103,6 @@ class ChartsDataManager {
       captions.push(i);
     }
     return captions;
-  }
-
-  getPositionsOnAxisY() {
-    return this.getCaptionsOnAxisY().map((y) => this.converter.yCoordToYPxPosition(y));
   }
 
   getValuesInColumn(columnKey) {
@@ -90,6 +121,7 @@ class ChartsDataManager {
     const [positionsX, positionsY] = this.calculatePositions(valuesX, valuesY, valuesCount);
     return {
       index: chartIndex,
+      visible: this.visibleCharts.indexOf(chartIndex) < 0,
       type: this.chartsData.types[chartKey],
       color: this.chartsData.colors[chartKey],
       name: this.chartsData.names[chartKey],
@@ -121,6 +153,11 @@ class ChartsDataManager {
       hoveredValueIndex = this.converter.valuesX.indexOf(hoveredValueX);
     }
     return hoveredValueIndex;
+  }
+
+  toggleChart(index) {
+    this.visibleCharts[index] = this.visibleCharts.indexOf(index) < 0 ? index : null;
+    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY());
   }
 
 }

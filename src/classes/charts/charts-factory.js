@@ -3,11 +3,16 @@ import LineChartHoverView from './views/line-chart-hover-view';
 import GridView from './views/grid-view';
 import ChartsDataManager from './charts-data-manager';
 import Tooltip from '../views/tooltip-view';
+import Utils from '../utils';
 
 class ChartsFactory {
 
   constructor(canvas) {
-    this.boundingClientRect = canvas.getBoundingClientRect();
+    const boundingClientRect = canvas.getBoundingClientRect();
+
+    this.canvas = canvas;
+    this.offsetTop = boundingClientRect.top;
+    this.offsetLeft = boundingClientRect.left;
     this.dataManager = null;
     this.hasHover = false;
     this.charts = [];
@@ -36,13 +41,12 @@ class ChartsFactory {
 
   enableHover() {
     this.hasHover = true;
-    this._bindMouseMove();
+    this._bindHoverEvents();
     return this;
   }
 
   createCharts() {
-    this.charts = [];
-    this.dataManager.getNormalizedChartsDataAll().forEach((item) => {
+    this.dataManager.getNormalizedChartsData().forEach((item) => {
       switch (item.type) {
         case 'line':
           const chart = new LineChartView(item);
@@ -60,18 +64,26 @@ class ChartsFactory {
   }
 
   updateCharts() {
+    const newChartsData = this.dataManager.getNormalizedChartsData();
+
     this.charts
       .filter((chart) => typeof chart.updatePositions === 'function')
       .forEach((chart) => {
         const currentChartData = chart.data;
-        const {positionsX, positionsY} = this.dataManager.getNormalizedChartsDataAll()[currentChartData.index];
+        const {positionsX, positionsY} = newChartsData[currentChartData.index];
         chart.updatePositions(positionsX, positionsY);
       });
+
+    this.charts.forEach((chart) => {
+      const currentChartData = chart.data;
+      const {visible} = newChartsData[currentChartData.index];
+      chart.updateVisibility(visible);
+    })
   }
 
   updateGrid() {
     this.grid.updatePositions(
-      this.dataManager.getAllPositionsX(),
+      this.dataManager.getPositionsOnAxisX(),
       this.dataManager.getPositionsOnAxisY(),
       this.dataManager.getCaptionsOnAxisY(),
     );
@@ -79,8 +91,8 @@ class ChartsFactory {
 
   createGrid() {
     this.grid = new GridView(
-      this.dataManager.getAllPositionsX(),
-      this.dataManager.getAllCaptionsX(),
+      this.dataManager.getPositionsOnAxisX(),
+      this.dataManager.getCaptionsOnAxisX(),
       this.dataManager.getPositionsOnAxisY(),
       this.dataManager.getCaptionsOnAxisY(),
       this.dataManager.converter.layout
@@ -93,8 +105,16 @@ class ChartsFactory {
     return this.tooltip;
   }
 
+  toggleChart(index) {
+    this.dataManager.toggleChart(index);
+    this.updateCharts();
+    if (this.grid) {
+      this.updateGrid();
+    }
+  }
+
   _createChartsHover() {
-    this.dataManager.getNormalizedChartsDataAll().forEach((chart) => {
+    this.dataManager.getNormalizedChartsData().forEach((chart) => {
       switch (chart.type) {
         case 'line':
           this.charts.push(new LineChartHoverView(chart));
@@ -103,19 +123,26 @@ class ChartsFactory {
     });
   }
 
-  _bindMouseMove() {
-    document.onmousemove = (e) => this._onMouseMove(e);
+  _bindHoverEvents() {
+    this.canvas.addEventListener('mousemove', (e) => this._onMouseMove(e));
+    this.canvas.addEventListener('mouseleave', (e) => this._onMouseLeave(e));
   }
 
   _onMouseMove(e) {
-    const mouseX = Math.round(e.clientX - this.boundingClientRect.left);
-    const mouseY = Math.round(e.clientY - this.boundingClientRect.top);
+    const mouseX = Math.round(e.clientX - this.offsetLeft + window.scrollX);
+    const mouseY = Math.round(e.clientY - this.offsetTop + window.scrollY);
     this._handleMouseMove(mouseX, mouseY);
+  }
+
+  _onMouseLeave() {
+    this._handleMouseMove(-100, -100);
   }
 
   _handleMouseMove(mouseX, mouseY) {
     const hoverValueIndex = this.dataManager.getHoverPosition(mouseX, mouseY);
     const hoverValueX = this.dataManager.getAllValuesX()[hoverValueIndex];
+    const dateX = new Date(hoverValueX);
+    const hoverCaptionX = Utils.formatWeekday(dateX.getDay()) + ', ' + Utils.formatMonth(dateX.getMonth()) + ' ' + dateX.getDate();
     const hoverPositionsX = this.dataManager.converter.xCoordToXPxPosition(hoverValueX);
 
     const charts = this.charts.map((chart) => {
@@ -134,8 +161,7 @@ class ChartsFactory {
 
     if (this.tooltip) {
       this.tooltip.setCharts(charts.filter((chart) => chart instanceof LineChartView));
-      this.tooltip.setHoverValueX(hoverValueX);
-      this.tooltip.setHoverPositionX(hoverPositionsX);
+      this.tooltip.setHoverX(hoverPositionsX, hoverCaptionX);
     }
 
   }

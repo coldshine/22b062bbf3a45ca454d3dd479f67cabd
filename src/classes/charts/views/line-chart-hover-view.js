@@ -11,8 +11,12 @@ class LineChartHover {
     this.hoverY = y || null;
   }
 
+  updateVisibility(visible) {
+    this.data.visible = visible;
+  }
+
   draw(ctx) {
-    if (this.hoverX > 0 && this.hoverY > 0) {
+    if (this.hoverX > 0 && this.hoverY > 0 && this.data.visible) {
       ctx.save();
       ctx.strokeStyle = this.data.color;
       ctx.fillStyle = '#ffffff';

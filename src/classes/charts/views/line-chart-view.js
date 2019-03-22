@@ -4,11 +4,16 @@ class LineChart {
     this.data = data;
     this.animationTime = 5;
     this.targetY = [];
+    this.targetVisibility = true;
+    this.opacity = 1;
   }
 
   draw(ctx) {
-    if (this._needAnimation()) {
-      this._animate();
+    if (this._needMoveAnimation()) {
+      this._animateMovement();
+    }
+    if (this._needFadeAnimation()) {
+      this._animateFade();
     }
     this._drawLine(ctx);
   }
@@ -18,7 +23,11 @@ class LineChart {
     this.targetY = positionsY.slice(0); // target for animation
   }
 
-  _animate() {
+  updateVisibility(visible) {
+    this.targetVisibility = visible;
+  }
+
+  _animateMovement() {
     let inProgress = false;
     this.data.positionsY = this.data.positionsY.map((position, i) => {
       const target = this.targetY[i];
@@ -34,6 +43,20 @@ class LineChart {
     }
   }
 
+  _animateFade() {
+    if (this.targetVisibility) {
+      this.opacity += 0.1;
+    } else {
+      this.opacity -= 0.1;
+    }
+    this.opacity = Math.min(this.opacity, 1);
+    this.opacity = Math.max(this.opacity, 0);
+    const inProgress = this.opacity.between(0, 1);
+    if (!inProgress) {
+      this.data.visible = this.targetVisibility;
+    }
+  }
+
   _recalculatePosition(position, delta) {
     let increment = delta / this.animationTime;
     if (delta > 0) {
@@ -45,14 +68,19 @@ class LineChart {
     return position;
   }
 
-  _needAnimation() {
+  _needMoveAnimation() {
     return this.targetY.length;
+  }
+
+  _needFadeAnimation() {
+    return this.data.visible !== this.targetVisibility;
   }
 
   _drawLine(ctx) {
     ctx.save();
     ctx.lineWidth = 2;
     ctx.strokeStyle = this.data.color;
+    ctx.globalAlpha = this.opacity;
     ctx.beginPath();
     const x = this.data.positionsX[0];
     const y = this.data.positionsY[0];

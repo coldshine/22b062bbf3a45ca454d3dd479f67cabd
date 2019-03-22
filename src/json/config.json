@@ -19,10 +19,26 @@
       "offsetLeft": 0
     },
     "tooltip": {
-      "width": 80,
-      "height": 40,
-      "offsetTop": 20,
+      "width": 120,
+      "height": 70,
+      "offsetTop": 1,
       "offsetLeft": 0
+    }
+  },
+  "colors": {
+    "shadow": "#e9e8e8",
+    "greyLine": "#d0d0d0",
+    "greyText": "#8c8c8c",
+    "navigationCover": "rgba(234,255,221,0.5)",
+    "navigationHandler": "rgba(234,255,221,1)"
+  },
+  "fonts": {
+    "regular": {
+      "fontFamily": "Arial",
+      "fontSize": "12px"
+    },
+    "highlight": {
+      "fontSize": "16px"
     }
   }
 }

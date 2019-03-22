@@ -181,29 +181,24 @@ class GridView {
   }
 
   _drawHorizontalGridLine(ctx, y) {
-    this._drawGridLine(ctx, this.minX, y, this.maxX, y);
+    ctx.save();
+    ctx.fillStyle = Config.colors.greyLine;
+    ctx.fillRect(this.minX, y, this.maxX, 1);
+    ctx.restore();
   }
 
   _drawVerticalGridLine(ctx, x) {
-    this._drawGridLine(ctx, x, this.maxY, x, this.minY);
-  }
-
-  _drawGridLine(ctx, fromX, fromY, toX, toY) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(209,209,209,1)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    // ctx.moveTo(fromX + Utils.aliasPixel(fromX), fromY + Utils.aliasPixel(fromY));
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
-    ctx.stroke();
+    ctx.fillStyle = Config.colors.greyLine;
+    ctx.fillRect(x, this.maxY, 1, this.minY);
     ctx.restore();
   }
 
   _drawGridText(ctx, text, x, y, align, opacity = 1) {
     ctx.save();
-    ctx.strokeStyle = `rgba(0,0,0,${opacity})`;
-    ctx.fillStyle = `rgba(0,0,0,${opacity})`;
+    ctx.fillStyle = Config.colors.greyText;
+    ctx.font = Config.fonts.regular.fontSize + ' ' + Config.fonts.regular.fontFamily;
+    ctx.globalAlpha = opacity;
     ctx.lineWidth = 1;
     ctx.textAlign = align;
     ctx.fillText(text, x, y);
@@ -212,8 +207,7 @@ class GridView {
 
   _drawBottomSquare(ctx) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,1)';
-    ctx.fillStyle = 'rgba(255,255,255,1)';
+    ctx.fillStyle = 'white';
     ctx.fillRect(
       Config.layout.main.offsetLeft,
       Config.layout.main.offsetTop + Config.layout.main.height,

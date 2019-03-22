@@ -8,43 +8,102 @@
     body {
       margin: 0;
       padding: 0;
+      font: 12px/18px Arial, sans-serif;
     }
     canvas {
       display: block;
-      margin: 20px auto 50px;
-      /* border: 1px solid #c5c5c5; */
+      margin: 0 0 20px;
+    }
+    #app {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    #charts {
+      width: 70%;
     }
     #navigation {
       position: fixed;
       top: 50%;
-      left: 10px;
+      left: 25px;
       display: flex;
       flex-direction: column;
       transform: translateY(-50%);
+      width: 25%;
     }
     #navigation button {
       border: none;
     }
     button {
-      border: 1px solid #aeaeae;
+      display: flex;
+      border: 1px solid #d0d0d0;
       background: none;
       cursor: pointer;
       border-radius: 30px;
-      font-size: 20px;
       margin-bottom: 20px;
-      padding: 15px;
+      padding: 10px;
       outline: none;
-      opacity: 0.8;
+      color: #5b5b5b;
+      transition: color 0.3s ease;
+      min-width: 100px;
+      font: 20px/18px Arial, Helvetica, Verdana, sans-serif;
     }
     button:hover {
-      opacity: 1;
+      color: #000;
+    }
+    .chart-buttons {
+      display: flex;
+      margin-bottom: 30px;
+    }
+    .chart-buttons__button {
+      margin-right: 20px;
+      align-items: center;
+    }
+    .chart-buttons__button__checkbox {
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 100%;
+      margin-right: 10px;
+      position: relative;
+    }
+    .chart-buttons__button__checkbox:before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border-radius: 100%;
+      background-color: #fff;
+      transition: all 0.4s ease;
+      transform: none;
+    }
+    .chart-buttons__button.active .chart-buttons__button__checkbox:before {
+      transform: scale(0);
+    }
+    .chart-buttons__button__checkbox:after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      background: center no-repeat url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+PHBhdGggZmlsbD0id2hpdGUiIHN0cm9rZS13aWR0aD0iNDAiIGQ9Ik05IDE2LjJMNC44IDEybC0xLjQgMS40TDkgMTkgMjEgN2wtMS40LTEuNEw5IDE2LjJ6Ii8+PC9zdmc+);
+      transform: scale(0);
+      transition: all 0.3s ease;
+    }
+    .chart-buttons__button.active .chart-buttons__button__checkbox:after {
+      transform: none;
     }
   </style>
 </head>
 <body>
+<div id="app">
   <div id="navigation">
   </div>
-  <div id="canvases">
+  <div id="charts">
   </div>
+</div>
 </body>
 </html>

@@ -25,12 +25,11 @@ export default class {
     this.tooltip.draw(this.ctx);
   }
 
-  _bindEvents() {
-    subscribe(() => this.onStoreUpdate());
+  toggleChart(index) {
+    this.chartsFactory.toggleChart(index);
   }
 
-  onStoreUpdate() {
-    const visibleRange = getVisibleRange();
-    this.chartsFactory.setVisibleRange(visibleRange);
+  _bindEvents() {
+    subscribe(() => this.chartsFactory.setVisibleRange(getVisibleRange()));
   }
 }

@@ -31,6 +31,11 @@ export default class {
     return months[month];
   }
 
+  static formatWeekday(weekday) {
+    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return weekdays[weekday];
+  }
+
   static arrayUnique(array) {
     const a = array.concat();
     for(let i = 0; i < a.length; i++) {
@@ -41,5 +46,10 @@ export default class {
       }
     }
     return a;
+  }
+
+  static formatNumber(number){
+    const e = (Math.log(number) / Math.log(1e3)) | 0;
+    return +(number / Math.pow(1e3, e)).toFixed(2) + ('kMGTPEZY'[e - 1] || '');
   }
 }

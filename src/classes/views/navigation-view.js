@@ -70,7 +70,7 @@ export default class {
     }
   }
 
-  onMouseUp(e) {
+  onMouseUp() {
     this.prevRangeMoveMouseX = null;
     this.prevLeftBorderMoveMouseX = null;
     this.prevRightBorderMoveMouseX = null;
@@ -197,30 +197,26 @@ export default class {
   drawHandlerTopBottom(offsetTop) {
     const height = 3;
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(234,255,221,1)';
-    this.ctx.beginPath();
-    this.ctx.rect(
+    this.ctx.fillStyle = Config.colors.navigationHandler;
+    this.ctx.fillRect(
       this.rangeFromPx,
       offsetTop,
       this.rangeToPx - this.rangeFromPx,
       height
     );
-    this.ctx.fill();
     this.ctx.restore();
   }
 
   drawHandlerSide(x) {
     const width = 5;
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(234,255,221,1)';
-    this.ctx.beginPath();
-    this.ctx.rect(
+    this.ctx.fillStyle = Config.colors.navigationHandler;
+    this.ctx.fillRect(
       x,
       Config.layout.navigation.offsetTop,
       width,
       Config.layout.navigation.height
     );
-    this.ctx.fill();
     this.ctx.restore();
   }
 
@@ -239,16 +235,17 @@ export default class {
 
   drawCoverPart(offsetLeft, width) {
     this.ctx.save();
-    this.ctx.fillStyle = 'rgba(234,255,221,0.5)';
-    this.ctx.beginPath();
-    this.ctx.rect(
+    this.ctx.fillStyle = Config.colors.navigationCover;
+    this.ctx.fillRect(
       offsetLeft,
       Config.layout.navigation.offsetTop,
       width,
       Config.layout.navigation.height
     );
-    this.ctx.fill();
     this.ctx.restore();
   }
 
+  toggleChart(index) {
+    this.chartsFactory.toggleChart(index);
+  }
 }
