@@ -1,6 +1,7 @@
-let visibleFrom = 0.25;
-let visibleTo = 0.5;
+const defaultVisibleFrom = 0.25;
+const defaultVisibleTo = 0.5;
 
+const visibleRanges = [];
 const listeners = [];
 
 export function subscribe(listener) {
@@ -11,12 +12,18 @@ function dispatch() {
   listeners.forEach((listener) => listener());
 }
 
-export function updateVisibleRange(from, to) {
-  visibleFrom = from;
-  visibleTo = to;
+function setDefaultRange(chartIndex) {
+  visibleRanges[chartIndex] = [defaultVisibleFrom, defaultVisibleTo];
+}
+
+export function updateVisibleRange(index, from, to) {
+  visibleRanges[index] = [from, to];
   dispatch();
 }
 
-export function getVisibleRange() {
-  return [visibleFrom, visibleTo];
+export function getVisibleRange(chartIndex) {
+  if (!visibleRanges[chartIndex]) {
+    setDefaultRange(chartIndex);
+  }
+  return visibleRanges[chartIndex];
 }

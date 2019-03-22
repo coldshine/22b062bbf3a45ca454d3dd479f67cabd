@@ -8,7 +8,6 @@ export default class {
     const [visibleRangeFrom, visibleRangeTo] = getVisibleRange();
     this.canvas = canvas;
     this.ctx = ctx;
-    this.boundingClientRect = canvas.getBoundingClientRect();
     this.chartsFactory = (new ChartsFactory(canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.navigation)
@@ -25,12 +24,14 @@ export default class {
     this.deltaLeftBorderMoveMouseX = 0;
     this.deltaRightBorderMoveMouseX = 0;
     this.minVisibleRangeDelta = 60;
+    this.index = chartsData.index;
     this.bindEvents();
   }
 
   bindEvents() {
     this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-    document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+    this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e), false);
     document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
   }
 
@@ -68,6 +69,10 @@ export default class {
         this.prevRightBorderMoveMouseX = mouseX;
       }
     }
+  }
+
+  onMouseLeave(e) {
+    document.body.style.cursor = 'default';
   }
 
   onMouseUp() {
@@ -131,7 +136,7 @@ export default class {
   _updateRange() {
     const from = this._convertRangePxToPercents(this.rangeFromPx);
     const to = this._convertRangePxToPercents(this.rangeToPx);
-    updateVisibleRange(from, to);
+    updateVisibleRange(this.index, from, to);
   }
 
   _isMouseOnRange(mouseX, mouseY) {
@@ -155,7 +160,8 @@ export default class {
   }
 
   _isMouseYInsideLayout(mouseY) {
-    return mouseY.between(Config.layout.navigation.offsetTop, this.boundingClientRect.height);
+    const rect = this.canvas.getBoundingClientRect();
+    return mouseY.between(Config.layout.navigation.offsetTop, rect.height);
   }
 
   _getIncreasingDelta(delta) {
@@ -175,8 +181,9 @@ export default class {
   }
 
   _getMouseLocalPosition(e) {
-    const mouseX = Math.round(e.clientX - this.boundingClientRect.left);
-    const mouseY = Math.round(e.clientY - this.boundingClientRect.top);
+    const rect = this.canvas.getBoundingClientRect();
+    const mouseX = Math.round(e.clientX - rect.left);
+    const mouseY = Math.round(e.clientY - rect.top);
     return [mouseX, mouseY];
   }
 

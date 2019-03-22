@@ -16,6 +16,7 @@ export default class {
     this.charts = this.chartsFactory.createCharts();
     this.grid = this.chartsFactory.createGrid();
     this.tooltip = this.chartsFactory.createTooltip();
+    this.index = chartsData.index;
     this._bindEvents();
   }
 
@@ -30,6 +31,6 @@ export default class {
   }
 
   _bindEvents() {
-    subscribe(() => this.chartsFactory.setVisibleRange(getVisibleRange()));
+    subscribe(() => this.chartsFactory.setVisibleRange(getVisibleRange(this.index)));
   }
 }
