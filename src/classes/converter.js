@@ -28,8 +28,8 @@ class Converter {
   }
 
   setMaxY(maxY) {
-    this.stepY = this._calculateAxisYStep(maxY);
     this.maxY = this._calculateMaxY(maxY);
+    this.stepY = this._calculateAxisYStep(this.maxY);
   }
 
   coordsToPxPosition(x, y) {
@@ -58,7 +58,9 @@ class Converter {
   }
 
   _calculateMaxY(maxY) {
-    return Math.ceil(maxY / this.stepY) * this.stepY;
+    const numberLength = maxY.toString().length;
+    const digits = Math.pow(10, numberLength - 1) / 2;
+    return Math.ceil(maxY / digits) * digits;
   }
 
   /**

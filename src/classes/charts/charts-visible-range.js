@@ -8,8 +8,8 @@ export function subscribe(listener) {
   listeners.push(listener);
 }
 
-function dispatch() {
-  listeners.forEach((listener) => listener());
+function dispatch(chartIndex) {
+  listeners[chartIndex](getVisibleRange(chartIndex));
 }
 
 function setDefaultRange(chartIndex) {
@@ -18,7 +18,7 @@ function setDefaultRange(chartIndex) {
 
 export function updateVisibleRange(index, from, to) {
   visibleRanges[index] = [from, to];
-  dispatch();
+  dispatch(index);
 }
 
 export function getVisibleRange(chartIndex) {
