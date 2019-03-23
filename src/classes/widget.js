@@ -47,12 +47,14 @@ class Widget {
     const ratio = 2;
 
     const canvas = document.createElement('canvas');
-    const size = Math.min(Config.layout.canvas.size, document.getElementById('charts').offsetWidth);
-    const sizeScaled = size * ratio;
-    canvas.width = sizeScaled;
-    canvas.height = sizeScaled;
-    canvas.style.width = size + 'px';
-    canvas.style.height = size + 'px';
+    const width = Math.min(Config.layout.canvas.size, document.getElementById('charts').offsetWidth);
+    const height = Config.layout.canvas.size;
+    const widthScaled = width * ratio;
+    const heightScaled = height * ratio;
+    canvas.width = widthScaled;
+    canvas.height = heightScaled;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
 
     const ctx = canvas.getContext('2d');
     ctx.scale(ratio, ratio);
