@@ -103,7 +103,6 @@ class ChartsDataManager {
     for (let i = this.converter.minY; i < this.converter.maxY; i += this.converter.stepY) {
       captions.push(i);
     }
-    captions.push(this.converter.maxY);
     return captions;
   }
 

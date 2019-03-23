@@ -37,7 +37,9 @@ class Tooltip {
 
   draw(ctx) {
     if (this.position !== null) {
-      const x = this.position - this.halfWidth;
+      let x = this.position - this.halfWidth;
+      x = Math.max(1, x);
+      x = Math.min(x, ctx.canvas.offsetWidth - this.width - 1);
       this._drawRect(ctx, x);
       this._drawText(ctx, x + 10, this.captionX);
     }
