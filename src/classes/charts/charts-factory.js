@@ -14,8 +14,8 @@ class ChartsFactory {
     this.offsetTop = boundingClientRect.top;
     this.offsetLeft = boundingClientRect.left;
     this.dataManager = null;
-    this.hasHover = false;
     this.charts = [];
+    this.hovers = [];
     this.grid = null;
     this.tooltip = null;
   }
@@ -32,16 +32,10 @@ class ChartsFactory {
 
   setVisibleRange(visibleRange) {
     this.dataManager.setVisibleRange(visibleRange);
-    this.updateCharts();
+    this.updateChartsPositions();
     if (this.grid) {
       this.updateGrid();
     }
-    return this;
-  }
-
-  enableHover() {
-    this.hasHover = true;
-    this._bindHoverEvents();
     return this;
   }
 
@@ -57,34 +51,41 @@ class ChartsFactory {
           break;
       }
     });
-    if (this.hasHover) {
-      this._createChartsHover();
-    }
     return this.charts;
   }
 
-  updateCharts() {
+  updateChartsPositions() {
     const newChartsData = this.dataManager.getNormalizedChartsData();
-
     this.charts
       .filter((chart) => typeof chart.updatePositions === 'function')
       .forEach((chart) => {
-        const currentChartData = chart.data;
-        const {positionsX, positionsY} = newChartsData[currentChartData.index];
+        const {positionsX, positionsY} = newChartsData[chart.data.index];
         chart.updatePositions(positionsX, positionsY);
       });
+  }
+
+  updateChartsVisibility() {
+    const newChartsData = this.dataManager.getNormalizedChartsData();
 
     this.charts.forEach((chart) => {
-      const currentChartData = chart.data;
-      const {visible} = newChartsData[currentChartData.index];
+      const {visible} = newChartsData[chart.data.index];
       chart.updateVisibility(visible);
-    })
+    });
+
+    this.hovers.forEach((hover) => {
+      const {visible} = newChartsData[hover.index];
+      hover.updateVisibility(visible);
+    });
+
+    if (this.tooltip) {
+      this.tooltip.updateChartsData(newChartsData);
+    }
+    this.updateChartsPositions();
   }
 
   updateGrid() {
     this.grid.updatePositions(
       this.dataManager.getPositionsOnAxisX(),
-      this.dataManager.getPositionsOnAxisY(),
       this.dataManager.getCaptionsOnAxisY(),
     );
   }
@@ -101,26 +102,28 @@ class ChartsFactory {
   }
 
   createTooltip() {
-    this.tooltip = new Tooltip(this.charts);
+    this.tooltip = new Tooltip(this.charts.map((chart) => chart.data));
     return this.tooltip;
   }
 
   toggleChart(index) {
     this.dataManager.toggleChart(index);
-    this.updateCharts();
+    this.updateChartsVisibility();
     if (this.grid) {
       this.updateGrid();
     }
   }
 
-  _createChartsHover() {
+  createHovers() {
     this.dataManager.getNormalizedChartsData().forEach((chart) => {
       switch (chart.type) {
         case 'line':
-          this.charts.push(new LineChartHoverView(chart));
+          this.hovers.push(new LineChartHoverView(chart.index, chart.color));
           break;
       }
     });
+    this._bindHoverEvents();
+    return this.hovers;
   }
 
   _bindHoverEvents() {
@@ -141,27 +144,30 @@ class ChartsFactory {
   _handleMouseMove(mouseX, mouseY) {
     const hoverValueIndex = this.dataManager.getHoverPosition(mouseX, mouseY);
     const hoverValueX = this.dataManager.getAllValuesX()[hoverValueIndex];
-    const dateX = new Date(hoverValueX);
-    const hoverCaptionX = Utils.formatWeekday(dateX.getDay()) + ', ' + Utils.formatMonth(dateX.getMonth()) + ' ' + dateX.getDate();
-    const hoverPositionsX = this.dataManager.converter.xCoordToXPxPosition(hoverValueX);
+    const hoverPositionX = this.dataManager.converter.xCoordToXPxPosition(hoverValueX);
+    const hoverValuesY = [];
 
-    const charts = this.charts.map((chart) => {
-      chart.hoverValueY = chart.data.valuesY[hoverValueIndex];
-      chart.hoverCoordY = this.dataManager.converter.yCoordToYPxPosition(chart.hoverValueY);
-      return chart;
-    });
+    this.charts
+      .forEach((chart) => {
+        const hoverValueY = chart.data.valuesY[hoverValueIndex];
+        hoverValuesY.push(hoverValueY);
+      });
 
-    charts
-      .filter((chart) => typeof chart.setHoverPosition === 'function')
-      .forEach((chart) => chart.setHoverPosition(hoverPositionsX, chart.hoverCoordY));
+    this.hovers
+      .forEach((hover, index) => {
+        const hoverValueY = hoverValuesY[index];
+        const hoverPositionY = this.dataManager.converter.yCoordToYPxPosition(hoverValueY);
+        hover.setPosition(hoverPositionX, hoverPositionY);
+      });
 
     if (this.grid) {
-      this.grid.setHoverPositionX(hoverPositionsX);
+      this.grid.setHoverPositionX(hoverPositionX);
     }
 
     if (this.tooltip) {
-      this.tooltip.setCharts(charts.filter((chart) => chart instanceof LineChartView));
-      this.tooltip.setHoverX(hoverPositionsX, hoverCaptionX);
+      const dateX = new Date(hoverValueX);
+      const hoverCaptionX = Utils.formatWeekday(dateX.getDay()) + ', ' + Utils.formatMonth(dateX.getMonth()) + ' ' + dateX.getDate();
+      this.tooltip.setHover(hoverPositionX, hoverCaptionX, hoverValuesY);
     }
 
   }

@@ -47,15 +47,12 @@ class Widget {
     const ratio = 2;
 
     const canvas = document.createElement('canvas');
-    const {offsetTop, offsetLeft} = Config.layout.canvas;
     const size = Math.min(Config.layout.canvas.size, document.getElementById('charts').offsetWidth);
     const sizeScaled = size * ratio;
     canvas.width = sizeScaled;
     canvas.height = sizeScaled;
     canvas.style.width = size + 'px';
     canvas.style.height = size + 'px';
-    canvas.style.top = offsetTop + 'px';
-    canvas.style.left = offsetLeft + 'px';
 
     const ctx = canvas.getContext('2d');
     ctx.scale(ratio, ratio);

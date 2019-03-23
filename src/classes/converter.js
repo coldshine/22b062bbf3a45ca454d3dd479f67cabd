@@ -5,38 +5,30 @@ class Converter {
   constructor(valuesX, valuesY, layout) {
     this.layout = layout;
     const [minX, maxX] = Utils.getMinMax(valuesX);
-    const [minY, maxY] = Utils.getMinMax(valuesY);
-    this.stepY = this._calculateAxisYStep(minY, maxY);
     this.valuesX = valuesX;
     this.valuesY = valuesY;
     this.minX = minX;
     this.maxX = maxX;
-    this.minY = this._calculateMinY(minY);
-    this.maxY = this._calculateMaxY(maxY);
+    this.minY = 0;
+    this.maxY = Utils.getMax(valuesY);
     this.deltaX = this.maxX - this.minX;
-    this.deltaY = this.maxY - this.minY;
     this.scaleX = 1;
-    this.scaleY = 1;
-    this.offsetX = 0;
+    this.percentsOffsetX = 0;
     this.translateX = 0;
-    this.translateY = 0;
-    this.yAxisMinLinesCount = 4;
-    this.yAxisMaxLinesCount = 7;
+    this.yAxisLinesCount = 6;
   }
 
   setVisibleRange(visibleRange) {
     const [from, to] = visibleRange;
     const diff = to - from;
     this.scaleX = 1 / diff;
-    this.offsetX = from;
+    this.percentsOffsetX = from;
     this.translateX = from * this.layout.width * this.scaleX;
   }
 
-  setMinMaxY(minY, maxY) {
-    this.stepY = this._calculateAxisYStep(minY, maxY);
-    this.minY = this._calculateMinY(minY);
+  setMaxY(maxY) {
+    this.stepY = this._calculateAxisYStep(maxY);
     this.maxY = this._calculateMaxY(maxY);
-    this.deltaY = this.maxY - this.minY;
   }
 
   coordsToPxPosition(x, y) {
@@ -52,31 +44,16 @@ class Converter {
 
   yCoordToYPxPosition(y) {
     y = this.maxY - y + this.minY; // y should be inverted since order is from the bottom to the top
-    return this._coordToPxPosition(y, this.minY, this.deltaY, this.layout.height, this.layout.offsetTop - this.translateY, this.scaleY);
+    return this._coordToPxPosition(y, this.minY, this.maxY, this.layout.height, this.layout.offsetTop);
   }
 
   pxPositionXToValueX(x) {
-    const coords = this._pxPositionToCoord(x, this.minX, this.deltaX, this.layout.width, this.offsetX, this.scaleX);
+    const coords = this._pxPositionToCoord(x, this.minX, this.deltaX, this.layout.width, this.percentsOffsetX, this.scaleX);
     return this.valuesX.findClosestValue(coords); // since chart value is discreet we have to find the exact chart value by pixel position and the look for real closest chart value;
   }
 
-  _calculateAxisYStep(minY, maxY) {
-    const deltaY = maxY - minY;
-    let step = Math.pow(10, deltaY.toString().length - 1); // bit depth
-    const depthDiff = deltaY / step;
-    const multiplier = 2;
-    if (!depthDiff.between(this.yAxisMinLinesCount, this.yAxisMaxLinesCount, true)) {
-      if (depthDiff  < this.yAxisMinLinesCount) {
-        step /= multiplier;
-      } else if (depthDiff  > this.yAxisMaxLinesCount) {
-        step *= multiplier;
-      }
-    }
-    return step;
-  }
-
-  _calculateMinY(minY) {
-    return Math.floor(minY / this.stepY) * this.stepY;
+  _calculateAxisYStep(maxY) {
+    return Math.ceil(maxY / this.yAxisLinesCount);
   }
 
   _calculateMaxY(maxY) {
@@ -86,12 +63,12 @@ class Converter {
   /**
    * Converts chart coordinate (x or y) to pixel position
    */
-  _coordToPxPosition(coord, coordOffset, delta, pxCount, translate, scale) {
+  _coordToPxPosition(coord, coordOffset, delta, pxCount, offset, scale = 1) {
     const localCoord = coord - coordOffset;
     const percents = localCoord / delta;
     let pxPosition = Math.round(percents * pxCount); // pixel position
     pxPosition *= scale;
-    pxPosition += translate;
+    pxPosition += offset;
     return pxPosition;
   }
 

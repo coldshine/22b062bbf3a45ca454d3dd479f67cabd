@@ -17,7 +17,7 @@ class ChartsDataManager {
   setVisibleRange(visibleRange) {
     this.visibleRange = visibleRange;
     this.converter.setVisibleRange(visibleRange);
-    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY());
+    this.converter.setMaxY(this.getMaxVisibleValueY());
   }
 
   getNormalizedChartsData() {
@@ -65,28 +65,22 @@ class ChartsDataManager {
     return allValuesY;
   }
 
-  getMinMaxVisibleValueY() {
+  getMaxVisibleValueY() {
     const [from, to] = this.visibleRange;
-    let minVisibleValueY = null;
-    let maxVisibleValueY = null;
+    let maxVisibleY = null;
     this.getNormalizedChartsData()
       .filter((chart) => chart.visible)
       .forEach((chart) => {
         const indexFrom = Math.floor(chart.valuesY.length * from);
         const indexTo = Math.ceil(chart.valuesY.length * to);
         const valuesY = chart.valuesY.slice(indexFrom, indexTo);
-        const [min, max] = Utils.getMinMax(valuesY);
-        minVisibleValueY = minVisibleValueY ? Math.min(minVisibleValueY, min) : min;
-        maxVisibleValueY = maxVisibleValueY ? Math.max(maxVisibleValueY, max) : max;
+        const max = Utils.getMax(valuesY);
+        maxVisibleY = maxVisibleY ? Math.max(maxVisibleY, max) : max;
       });
-    if (!minVisibleValueY) {
-      minVisibleValueY = 0;
+    if (!maxVisibleY) {
+      maxVisibleY = Utils.getMax(this.getAllValuesY());
     }
-    if (!maxVisibleValueY) {
-      const [minY, maxY] = Utils.getMinMax(this.getAllValuesY());
-      maxVisibleValueY = maxY;
-    }
-    return [minVisibleValueY, maxVisibleValueY];
+    return maxVisibleY;
   }
 
   getPositionsOnAxisX() {
@@ -164,7 +158,7 @@ class ChartsDataManager {
 
   toggleChart(index) {
     this.visibleCharts[index] = this.visibleCharts.indexOf(index) < 0 ? index : null;
-    this.converter.setMinMaxY(...this.getMinMaxVisibleValueY());
+    this.converter.setMaxY(this.getMaxVisibleValueY());
   }
 
 }

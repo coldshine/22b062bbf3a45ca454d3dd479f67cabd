@@ -9,11 +9,11 @@ export default class {
     this.chartsFactory = (new ChartsFactory(ctx.canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
-      .enableHover()
       .setVisibleRange(visibleRange)
     ;
     this.ctx = ctx;
     this.charts = this.chartsFactory.createCharts();
+    this.hovers = this.chartsFactory.createHovers();
     this.grid = this.chartsFactory.createGrid();
     this.tooltip = this.chartsFactory.createTooltip();
     this.index = chartsData.index;
@@ -23,6 +23,7 @@ export default class {
   draw() {
     this.grid.draw(this.ctx);
     this.charts.forEach((chart) => chart.draw(this.ctx));
+    this.hovers.forEach((hover) => hover.draw(this.ctx));
     this.tooltip.draw(this.ctx);
   }
 

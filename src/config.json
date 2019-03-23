@@ -1,27 +1,23 @@
 {
   "layout": {
     "canvas": {
-      "size": 600,
-      "offsetTop": 0,
-      "offsetLeft": 0
+      "size": 600
     },
     "main": {
       "width": 600,
-      "height": 480,
-      "offsetTop": 0,
+      "height": 380,
+      "offsetTop": 80,
       "offsetLeft": 0
     },
     "navigation": {
       "width": 600,
       "height": 80,
-      "offsetTop": 520,
+      "offsetTop": 500,
       "offsetLeft": 0
     },
     "tooltip": {
-      "width": 120,
       "height": 70,
-      "offsetTop": 1,
-      "offsetLeft": 0
+      "offsetTop": 1
     }
   },
   "colors": {

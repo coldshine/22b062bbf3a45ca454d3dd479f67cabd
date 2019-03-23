@@ -10,7 +10,7 @@ class LineChart {
 
   draw(ctx) {
     if (this._needMoveAnimation()) {
-      this._animateMovement();
+      this._animateTranslation();
     }
     if (this._needFadeAnimation()) {
       this._animateFade();
@@ -27,7 +27,7 @@ class LineChart {
     this.targetVisibility = visible;
   }
 
-  _animateMovement() {
+  _animateTranslation() {
     let inProgress = false;
     this.data.positionsY = this.data.positionsY.map((position, i) => {
       const target = this.targetY[i];

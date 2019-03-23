@@ -8,3 +8,7 @@ Array.prototype.findClosestValue = function (search) {
   const min = Math.min.apply(Math, sorted);
   return this[sorted.indexOf(min)]
 };
+Number.prototype.toFixedNumber = function(digits){
+  const pow = Math.pow(10, digits);
+  return Math.round(this * pow) / pow;
+};
