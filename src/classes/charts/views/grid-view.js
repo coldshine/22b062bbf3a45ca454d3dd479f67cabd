@@ -43,7 +43,7 @@ class GridView {
     let stepX = Math.ceil(this.minSpaceBetweenVerticalLines / (this.positionsX[1] - this.positionsX[0]));
     stepX = Math.pow(2, Math.round(Math.sqrt(stepX)));
     const opacities = Array(this.positionsX.length).fill(0);
-    for (let i = 0; i <= this.positionsX.length; i+=stepX) {
+    for (let i = 0; i < this.positionsX.length; i+=stepX) {
       opacities[i] = 1;
     }
     return opacities;
