@@ -28,7 +28,7 @@ class Store {
 
   updateVisibleRange(chartIndex, from, to) {
     this.state.visibleRanges[chartIndex] = [from, to];
-    this._dispatch(eventTypes.visibleRangeChange, this.getVisibleRange(chartIndex));
+    this._dispatch(eventTypes.visibleRangeChange, chartIndex, this.getVisibleRange(chartIndex));
   }
 
   getVisibleRange(chartIndex) {

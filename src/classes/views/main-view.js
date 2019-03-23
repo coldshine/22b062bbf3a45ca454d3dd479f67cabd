@@ -33,7 +33,11 @@ export default class {
   _bindEvents() {
     store.subscribe(
       eventTypes.visibleRangeChange,
-      (eventType, visibleRange) => this.chartsFactory.setVisibleRange(visibleRange)
+      (eventType, chartIndex, visibleRange) => {
+        if (chartIndex === this.index) {
+          this.chartsFactory.setVisibleRange(visibleRange)
+        }
+      }
     );
   }
 }

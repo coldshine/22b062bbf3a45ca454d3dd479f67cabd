@@ -29,22 +29,25 @@ export default class {
     this.background = 'white';
     this.coverColor = Config.colors.navigationCoverLight;
     this.handlerColor = Config.colors.navigationHandlerLight;
-    this.bindEvents();
+    this._bindEvents();
   }
 
-  bindEvents() {
-    this.clickAndMoveMouseHandler = (e) => this.onClickAndMoveMouse(e.clientX, e.clientY);
-    this.tapAndSwipeHandler = (e) => this.onClickAndMoveMouse(e.touches[0].clientX, e.touches[0].clientY);
+  _bindEvents() {
+    this.clickAndMoveMouseHandler = (e) => this._onClickAndMoveMouse(e.clientX, e.clientY);
+    this.tapAndSwipeHandler = (e) => this._onClickAndMoveMouse(e.touches[0].clientX, e.touches[0].clientY);
 
-    this.ctx.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e.clientX, e.clientY), false);
-    this.ctx.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e.clientX, e.clientY), false);
-    this.ctx.canvas.addEventListener('mouseleave', () => this.onMouseLeave(), false);
-    document.addEventListener('mouseup', () => this.onMouseUp(), false);
+    // mouse events
+    this.ctx.canvas.addEventListener('mousedown', (e) => this._onMouseDown(e.clientX, e.clientY), false);
+    this.ctx.canvas.addEventListener('mousemove', (e) => this._onMouseMove(e.clientX, e.clientY), false);
+    this.ctx.canvas.addEventListener('mouseleave', () => this._onMouseLeave(), false);
+    document.addEventListener('mouseup', () => this._onMouseUp(), false);
 
-    this.ctx.canvas.addEventListener("touchstart", (e) => this.onMouseDown(e.touches[0].clientX, e.touches[0].clientY), false);
-    this.ctx.canvas.addEventListener("touchend", () => this.onMouseUp(), false);
-    this.ctx.canvas.addEventListener("touchcancel", () => this.onMouseUp(), false);
+    // touch events
+    this.ctx.canvas.addEventListener("touchstart", (e) => this._onMouseDown(e.touches[0].clientX, e.touches[0].clientY), false);
+    this.ctx.canvas.addEventListener("touchend", () => this._onMouseUp(), false);
+    this.ctx.canvas.addEventListener("touchcancel", () => this._onMouseUp(), false);
 
+    // store events
     store.subscribe(eventTypes.toggleTheme, (eventType, theme) => this._onChangeTheme(theme))
   }
 
@@ -60,7 +63,7 @@ export default class {
     }
   }
 
-  onMouseDown(clientX, clientY) {
+  _onMouseDown(clientX, clientY) {
     document.addEventListener('mousemove', this.clickAndMoveMouseHandler, false);
     document.addEventListener('touchmove', this.tapAndSwipeHandler, false);
     this._actualizeMouseLocalPosition(clientX, clientY);
@@ -71,13 +74,13 @@ export default class {
     }
   }
 
-  onMouseMove(clientX, clientY) {
+  _onMouseMove(clientX, clientY) {
     this._actualizeMouseLocalPosition(clientX, clientY);
     document.body.style.cursor = this._isMouseOnRangeBorder()  ? 'ew-resize' :
       this._isMouseOnRange() ? 'grab' : 'default';
   }
 
-  onClickAndMoveMouse(clientX, clientY) {
+  _onClickAndMoveMouse(clientX, clientY) {
     const isMouseOut = this._isMouseOutsideOfPage(clientX, clientY);
     this._actualizeMouseLocalPosition(clientX, clientY);
     if (this.prevRangeMoveMouseX) {
@@ -103,11 +106,11 @@ export default class {
     }
   }
 
-  onMouseLeave() {
+  _onMouseLeave() {
     document.body.style.cursor = 'default';
   }
 
-  onMouseUp() {
+  _onMouseUp() {
     document.removeEventListener('mousemove', this.clickAndMoveMouseHandler, false);
     document.removeEventListener('touchmove', this.tapAndSwipeHandler, false);
     this.prevRangeMoveMouseX = null;
@@ -225,12 +228,13 @@ export default class {
   }
 
   draw() {
-    this.drawHandler();
+    this._drawBackground();
+    this._drawHandler();
     this.charts.forEach((chart) => chart.draw(this.ctx));
-    this.drawCover();
+    this._drawCover();
   }
 
-  drawHandler() {
+  _drawHandler() {
     this.drawHandlerTopBottom(Config.layout.navigation.offsetTop);
     this.drawHandlerTopBottom(Config.layout.navigation.offsetTop + Config.layout.navigation.height - 3);
     this.drawHandlerSide(this.rangeFromPx);
@@ -263,7 +267,7 @@ export default class {
     this.ctx.restore();
   }
 
-  drawCover() {
+  _drawCover() {
     const width = Config.layout.navigation.width;
     const offsetLeft = Config.layout.navigation.offsetLeft;
     this.drawCoverPart(
@@ -288,16 +292,16 @@ export default class {
     this.ctx.restore();
   }
 
-  _drawBackground(ctx) {
-    ctx.save();
-    ctx.fillStyle = this.background;
-    ctx.fillRect(
+  _drawBackground() {
+    this.ctx.save();
+    this.ctx.fillStyle = this.background;
+    this.ctx.fillRect(
       Config.layout.main.offsetLeft,
       Config.layout.main.offsetTop + Config.layout.main.height,
       Config.layout.main.width,
-      ctx.canvas.offsetHeight - Config.layout.main.height
+      this.ctx.canvas.offsetHeight - Config.layout.main.height
     );
-    ctx.restore();
+    this.ctx.restore();
   }
 
 
