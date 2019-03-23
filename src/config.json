@@ -21,11 +21,16 @@
     }
   },
   "colors": {
-    "shadow": "#e9e8e8",
-    "greyLine": "#d0d0d0",
-    "greyText": "#8c8c8c",
-    "navigationCover": "rgba(234,255,221,0.5)",
-    "navigationHandler": "rgba(234,255,221,1)"
+    "shadowLight": "#e9e8e8",
+    "gridLineLight": "#d0d0d0",
+    "gridTextLight": "#8c8c8c",
+    "gridLineDark": "#293544",
+    "gridTextDark": "#546778",
+    "navigationCoverLight": "rgba(234,255,221,0.5)",
+    "navigationHandlerLight": "#ddeaf3",
+    "navigationCoverDark": "rgba(0,0,0,0.1)",
+    "navigationHandlerDark": "#40566b",
+    "darkBlue": "#242f3e"
   },
   "fonts": {
     "regular": {
@@ -35,5 +40,13 @@
     "highlight": {
       "fontSize": "16px"
     }
+  },
+  "themes": {
+    "day": "day",
+    "night": "night"
+  },
+  "defaults": {
+    "theme": "day",
+    "visibleRange": [0.25, 0.5]
   }
 }

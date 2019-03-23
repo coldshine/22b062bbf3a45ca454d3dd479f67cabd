@@ -1,4 +1,5 @@
 import Config from '../../../config';
+import { eventTypes, store } from "../../store";
 
 class GridView {
 
@@ -37,6 +38,25 @@ class GridView {
     this.targetOpacityY = 1;
     this.newOpacityY = 0;
     this.newTargetOpacityY = 0;
+
+    this.textColor = Config.colors.gridTextLight;
+    this.lineColor = Config.colors.gridLineLight;
+
+    this._bindEvents();
+  }
+
+  _bindEvents() {
+    store.subscribe(eventTypes.toggleTheme, (eventType, theme) => this._onChangeTheme(theme))
+  }
+
+  _onChangeTheme(theme) {
+    if (theme === Config.themes.night) {
+      this.textColor = Config.colors.gridTextDark;
+      this.lineColor = Config.colors.gridLineDark;
+    } else {
+      this.textColor = Config.colors.gridTextLight;
+      this.lineColor = Config.colors.gridLineLight;
+    }
   }
 
   calculateOpacitiesX() {
@@ -84,7 +104,6 @@ class GridView {
       this._drawGridY(ctx, this.newPositionsY, this.newCaptionsY, this.newOpacityY);
     }
     this._drawGridY(ctx, this.positionsY, this.captionsY, this.opacityY);
-    this._drawBottomSquare(ctx);
     this._drawGridX(ctx, this.positionsX, this.captionsX, this.opacititesX, true);
     if (this.hoverPositionX !== null) {
       this._drawVerticalGridLine(ctx, this.hoverPositionX);
@@ -229,35 +248,22 @@ class GridView {
   }
 
   _drawHorizontalGridLine(ctx, y) {
-    ctx.fillStyle = Config.colors.greyLine;
+    ctx.fillStyle = this.lineColor;
     ctx.fillRect(this.horizontalLine.offsetLeft, y - 1, this.horizontalLine.length, 1);
   }
 
   _drawVerticalGridLine(ctx, x) {
-    ctx.fillStyle = Config.colors.greyLine;
+    ctx.fillStyle = this.lineColor;
     ctx.fillRect(x, this.verticalLine.offsetTop, 1, this.verticalLine.length);
   }
 
   _drawGridText(ctx, text, x, y, align) {
-    ctx.fillStyle = Config.colors.greyText;
+    ctx.fillStyle = this.textColor;
     ctx.font = Config.fonts.regular.fontSize + ' ' + Config.fonts.regular.fontFamily;
     ctx.lineWidth = 1;
     ctx.textAlign = align;
     ctx.fillText(text, x, y);
   }
-
-  _drawBottomSquare(ctx) {
-    ctx.save();
-    ctx.fillStyle = 'white';
-    ctx.fillRect(
-      Config.layout.main.offsetLeft,
-      Config.layout.main.offsetTop + Config.layout.main.height,
-      Config.layout.main.width,
-      ctx.canvas.offsetHeight - Config.layout.main.height
-    );
-    ctx.restore();
-  }
-
 }
 
 export default GridView;

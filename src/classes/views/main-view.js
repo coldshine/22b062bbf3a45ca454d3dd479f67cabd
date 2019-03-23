@@ -1,15 +1,14 @@
 import Config from '../../config';
 import ChartsFactory from '../charts/charts-factory';
-import { getVisibleRange, subscribe } from '../charts/charts-visible-range';
+import { store, eventTypes } from '../store';
 
 export default class {
 
   constructor(ctx, chartsData) {
-    const visibleRange = getVisibleRange(chartsData.index);
     this.chartsFactory = (new ChartsFactory(ctx.canvas))
       .setChartsData(chartsData)
       .setLayout(Config.layout.main)
-      .setVisibleRange(visibleRange)
+      .setVisibleRange(store.getVisibleRange())
     ;
     this.ctx = ctx;
     this.charts = this.chartsFactory.createCharts();
@@ -32,6 +31,9 @@ export default class {
   }
 
   _bindEvents() {
-    subscribe((visibleRange) => this.chartsFactory.setVisibleRange(visibleRange));
+    store.subscribe(
+      eventTypes.visibleRangeChange,
+      (eventType, visibleRange) => this.chartsFactory.setVisibleRange(visibleRange)
+    );
   }
 }

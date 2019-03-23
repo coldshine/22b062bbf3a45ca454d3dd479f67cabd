@@ -30,6 +30,11 @@
       justify-content: flex-end;
       width: 100%;
     }
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+    }
     #charts {
       width: 70%;
     }
@@ -38,7 +43,7 @@
         width: 100%;
       }
     }
-    #navigation {
+    #leftCol {
       position: fixed;
       top: 50%;
       left: 25px;
@@ -48,11 +53,11 @@
       width: 25%;
     }
     @media (max-width: 768px) {
-      #navigation {
+      #leftCol {
         display: none;
       }
     }
-    #navigation button {
+    #leftCol button {
       border: none;
     }
     button {
@@ -118,13 +123,41 @@
     .chart-buttons__button.active .chart-buttons__button__checkbox:after {
       transform: none;
     }
+
+    .switch-theme-button-for-mobile {
+      display: none;
+      justify-content: center;
+    }
+    @media (max-width: 768px) {
+      .switch-theme-button-for-mobile {
+        display: flex;
+      }
+    }
+
+    .night-theme {
+      background: #242f3e;
+    }
+    .night-theme h1 {
+      color: #fff;
+    }
+    .night-theme button {
+      color: #36a8f1;
+      border-color: #344658;
+    }
+    .night-theme button:hover {
+      color: #67bbf1;
+    }
+    .night-theme .chart-buttons__button {
+      color: #fff;
+    }
   </style>
 </head>
 <body>
 <div id="app">
   <div id="fps" style="position: fixed; top: 10px; right: 10px;"></div>
-  <div id="navigation"></div>
+  <div id="leftCol"></div>
   <div id="charts"></div>
+  <div id="switchThemeButtonHolder" class="switch-theme-button-for-mobile"></div>
 </div>
 <script type="text/javascript" src="data.bundle.js"></script><script type="text/javascript" src="app.bundle.js"></script></body>
 </html>

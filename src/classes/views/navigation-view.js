@@ -1,11 +1,11 @@
 import Config from '../../config';
 import ChartsFactory from '../charts/charts-factory';
-import { getVisibleRange, updateVisibleRange } from '../charts/charts-visible-range';
+import { eventTypes, store } from '../store';
 
 export default class {
 
   constructor(ctx, chartsData) {
-    const [visibleRangeFrom, visibleRangeTo] = getVisibleRange();
+    const [visibleRangeFrom, visibleRangeTo] = store.getVisibleRange();
     this.ctx = ctx;
     this.chartsFactory = (new ChartsFactory(this.ctx.canvas))
       .setChartsData(chartsData)
@@ -26,6 +26,9 @@ export default class {
     this.index = chartsData.index;
     this.mouseX = null;
     this.mouseY = null;
+    this.background = 'white';
+    this.coverColor = Config.colors.navigationCoverLight;
+    this.handlerColor = Config.colors.navigationHandlerLight;
     this.bindEvents();
   }
 
@@ -41,6 +44,20 @@ export default class {
     this.ctx.canvas.addEventListener("touchstart", (e) => this.onMouseDown(e.touches[0].clientX, e.touches[0].clientY), false);
     this.ctx.canvas.addEventListener("touchend", () => this.onMouseUp(), false);
     this.ctx.canvas.addEventListener("touchcancel", () => this.onMouseUp(), false);
+
+    store.subscribe(eventTypes.toggleTheme, (eventType, theme) => this._onChangeTheme(theme))
+  }
+
+  _onChangeTheme(theme) {
+    if (theme === Config.themes.night) {
+      this.coverColor = Config.colors.navigationCoverDark;
+      this.handlerColor = Config.colors.navigationHandlerDark;
+      this.background = Config.colors.darkBlue;
+    } else {
+      this.coverColor = Config.colors.navigationCoverLight;
+      this.handlerColor = Config.colors.navigationHandlerLight;
+      this.background = 'white';
+    }
   }
 
   onMouseDown(clientX, clientY) {
@@ -157,7 +174,7 @@ export default class {
   _updateRange() {
     const from = this._convertRangePxToPercents(this.rangeFromPx);
     const to = this._convertRangePxToPercents(this.rangeToPx);
-    updateVisibleRange(this.index, from, to);
+    store.updateVisibleRange(this.index, from, to);
   }
 
   _isMouseOnRange() {
@@ -217,14 +234,13 @@ export default class {
     this.drawHandlerTopBottom(Config.layout.navigation.offsetTop);
     this.drawHandlerTopBottom(Config.layout.navigation.offsetTop + Config.layout.navigation.height - 3);
     this.drawHandlerSide(this.rangeFromPx);
-    this.drawHandlerSide(this.rangeFromPx );
     this.drawHandlerSide(this.rangeToPx - 5);
   }
 
   drawHandlerTopBottom(offsetTop) {
     const height = 3;
     this.ctx.save();
-    this.ctx.fillStyle = Config.colors.navigationHandler;
+    this.ctx.fillStyle = this.handlerColor;
     this.ctx.fillRect(
       this.rangeFromPx,
       offsetTop,
@@ -237,7 +253,7 @@ export default class {
   drawHandlerSide(x) {
     const width = 5;
     this.ctx.save();
-    this.ctx.fillStyle = Config.colors.navigationHandler;
+    this.ctx.fillStyle = this.handlerColor;
     this.ctx.fillRect(
       x,
       Config.layout.navigation.offsetTop,
@@ -262,7 +278,7 @@ export default class {
 
   drawCoverPart(offsetLeft, width) {
     this.ctx.save();
-    this.ctx.fillStyle = Config.colors.navigationCover;
+    this.ctx.fillStyle = this.coverColor;
     this.ctx.fillRect(
       offsetLeft,
       Config.layout.navigation.offsetTop,
@@ -271,6 +287,19 @@ export default class {
     );
     this.ctx.restore();
   }
+
+  _drawBackground(ctx) {
+    ctx.save();
+    ctx.fillStyle = this.background;
+    ctx.fillRect(
+      Config.layout.main.offsetLeft,
+      Config.layout.main.offsetTop + Config.layout.main.height,
+      Config.layout.main.width,
+      ctx.canvas.offsetHeight - Config.layout.main.height
+    );
+    ctx.restore();
+  }
+
 
   toggleChart(index) {
     this.chartsFactory.toggleChart(index);

@@ -40,7 +40,7 @@ class Widget {
   _createNavButtons(chartData, chartName) {
     const navButton = document.createElement('button');
     navButton.innerHTML = chartName;
-    document.getElementById('navigation').appendChild(navButton);
+    document.getElementById('leftCol').appendChild(navButton);
     return navButton;
   }
 
@@ -111,7 +111,6 @@ class Widget {
     this.chartButtons.forEach((chartButton, index) => {
       chartButton.addEventListener('click', () => this._toggleChart(index), false);
     });
-
     this.navButton.addEventListener('click', () => this._scrollToChart(), false);
   }
 

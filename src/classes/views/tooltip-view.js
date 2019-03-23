@@ -1,4 +1,5 @@
 import Config from '../../config';
+import { store, eventTypes } from '../store';
 
 class Tooltip {
 
@@ -9,7 +10,27 @@ class Tooltip {
     this.captionsY = [];
     this.pixelsPerChar = 10; //px
     this.minColumnWidth = 70; //px
+    this.background = 'white';
+    this.dateTextColor = 'black';
+    this.shadowColor = Config.colors.shadowLight;
     this.updateChartsData(chartsData);
+    this._bindEvents();
+  }
+
+  _bindEvents() {
+    store.subscribe(eventTypes.toggleTheme, (eventType, theme) => this._onChangeTheme(theme))
+  }
+
+  _onChangeTheme(theme) {
+    if (theme === Config.themes.night) {
+      this.background = Config.colors.darkBlue;
+      this.dateTextColor = 'white';
+      this.shadowColor = 'black';
+    } else {
+      this.background = 'white';
+      this.dateTextColor = 'black';
+      this.shadowColor = Config.colors.shadowLight;
+    }
   }
 
   updateChartsData(chartsData) {
@@ -48,8 +69,8 @@ class Tooltip {
   _drawRect(ctx, x) {
     ctx.save();
     ctx.strokeStyle = Config.colors.greyLine;
-    ctx.fillStyle = 'white';
-    ctx.shadowColor =  Config.colors.shadow;
+    ctx.fillStyle = this.background;
+    ctx.shadowColor =  this.shadowColor;
     ctx.shadowOffsetY = 1;
     ctx.shadowBlur = 1;
     ctx.beginPath();
@@ -89,7 +110,7 @@ class Tooltip {
 
   _drawDate(ctx, x, y, text) {
     ctx.save();
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = this.dateTextColor;
     ctx.font = Config.fonts.highlight.fontSize + ' ' + Config.fonts.regular.fontFamily;
     ctx.fillText(text, x, y);
     ctx.restore();
