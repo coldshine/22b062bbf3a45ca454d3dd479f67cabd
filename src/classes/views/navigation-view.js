@@ -30,16 +30,23 @@ export default class {
   }
 
   bindEvents() {
-    this.clickAndMouseMoveHandler = this.onClickAndMouseMove.bind(this);
-    this.ctx.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-    this.ctx.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e), false);
-    this.ctx.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
-    document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
+    this.clickAndMoveMouseHandler = (e) => this.onClickAndMoveMouse(e.clientX, e.clientY);
+    this.tapAndSwipeHandler = (e) => this.onClickAndMoveMouse(e.touches[0].clientX, e.touches[0].clientY);
+
+    this.ctx.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e.clientX, e.clientY), false);
+    this.ctx.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e.clientX, e.clientY), false);
+    this.ctx.canvas.addEventListener('mouseleave', () => this.onMouseLeave(), false);
+    document.addEventListener('mouseup', () => this.onMouseUp(), false);
+
+    this.ctx.canvas.addEventListener("touchstart", (e) => this.onMouseDown(e.touches[0].clientX, e.touches[0].clientY), false);
+    this.ctx.canvas.addEventListener("touchend", () => this.onMouseUp(), false);
+    this.ctx.canvas.addEventListener("touchcancel", () => this.onMouseUp(), false);
   }
 
-  onMouseDown(e) {
-    document.addEventListener('mousemove', this.clickAndMouseMoveHandler, false);
-    this._actualizeMouseLocalPosition(e);
+  onMouseDown(clientX, clientY) {
+    document.addEventListener('mousemove', this.clickAndMoveMouseHandler, false);
+    document.addEventListener('touchmove', this.tapAndSwipeHandler, false);
+    this._actualizeMouseLocalPosition(clientX, clientY);
     this.prevLeftBorderMoveMouseX = this._isMouseOnLeftRangeBorder() ? this.mouseX : null;
     this.prevRightBorderMoveMouseX = this._isMouseOnRightRangeBorder() ? this.mouseX : null;
     if (!(this.prevLeftBorderMoveMouseX || this.prevRightBorderMoveMouseX)) {
@@ -47,15 +54,15 @@ export default class {
     }
   }
 
-  onMouseMove(e) {
-    this._actualizeMouseLocalPosition(e);
+  onMouseMove(clientX, clientY) {
+    this._actualizeMouseLocalPosition(clientX, clientY);
     document.body.style.cursor = this._isMouseOnRangeBorder()  ? 'ew-resize' :
       this._isMouseOnRange() ? 'grab' : 'default';
   }
 
-  onClickAndMouseMove(e) {
-    const isMouseOut = this._isMouseOutsideOfPage(e);
-    this._actualizeMouseLocalPosition(e);
+  onClickAndMoveMouse(clientX, clientY) {
+    const isMouseOut = this._isMouseOutsideOfPage(clientX, clientY);
+    this._actualizeMouseLocalPosition(clientX, clientY);
     if (this.prevRangeMoveMouseX) {
       this.deltaRangeMoveMouseX = this.mouseX - this.prevRangeMoveMouseX;
       this._handleRangeMove();
@@ -84,7 +91,8 @@ export default class {
   }
 
   onMouseUp() {
-    document.removeEventListener('mousemove', this.clickAndMouseMoveHandler, false);
+    document.removeEventListener('mousemove', this.clickAndMoveMouseHandler, false);
+    document.removeEventListener('touchmove', this.tapAndSwipeHandler, false);
     this.prevRangeMoveMouseX = null;
     this.prevLeftBorderMoveMouseX = null;
     this.prevRightBorderMoveMouseX = null;
@@ -168,8 +176,8 @@ export default class {
     return this.mouseX.between(this.rangeToPx - this.mouseBorderWidthHalf, this.rangeToPx + this.mouseBorderWidthHalf) && this._isMouseYInsideLayout();
   }
 
-  _isMouseOutsideOfPage(e) {
-    return e.clientY <= 0 || e.clientX <= 0 || (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight);
+  _isMouseOutsideOfPage(clientX, clientY) {
+    return clientY <= 0 || clientX <= 0 || (clientX >= window.innerWidth || clientY >= window.innerHeight);
   }
 
   _isMouseYInsideLayout() {
@@ -193,10 +201,10 @@ export default class {
     return px / Config.layout.navigation.width;
   }
 
-  _actualizeMouseLocalPosition(e) {
+  _actualizeMouseLocalPosition(clientX, clientY) {
     const rect = this.ctx.canvas.getBoundingClientRect();
-    this.mouseX = Math.round(e.clientX - rect.left);
-    this.mouseY = Math.round(e.clientY - rect.top);
+    this.mouseX = Math.round(clientX - rect.left);
+    this.mouseY = Math.round(clientY - rect.top);
   }
 
   draw() {

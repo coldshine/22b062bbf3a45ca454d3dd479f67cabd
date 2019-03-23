@@ -4,6 +4,7 @@ class Converter {
 
   constructor(valuesX, valuesY, layout) {
     this.layout = layout;
+    this.layout.width =  Utils.calculateLayoutWidth(layout.width);
     const [minX, maxX] = Utils.getMinMax(valuesX);
     this.valuesX = valuesX;
     this.valuesY = valuesY;

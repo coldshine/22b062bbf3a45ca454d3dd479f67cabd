@@ -29,6 +29,10 @@ export default class {
     return weekdays[weekday];
   }
 
+  static calculateLayoutWidth(width) {
+    return Math.min(width, document.getElementById('charts').offsetWidth);
+  }
+
   static formatNumber(number){
     const e = (Math.log(number) / Math.log(1e3)) | 0;
     return +(number / Math.pow(1e3, e)).toFixed(2) + ('kMGTPEZY'[e - 1] || '');

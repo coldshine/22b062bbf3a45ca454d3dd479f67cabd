@@ -36,6 +36,7 @@ class ChartsFactory {
     if (this.grid) {
       this.updateGrid();
     }
+    this._hideHover();
     return this;
   }
 
@@ -138,6 +139,10 @@ class ChartsFactory {
   }
 
   _onMouseLeave() {
+    this._hideHover();
+  }
+
+  _hideHover() {
     this._handleMouseMove(-100, -100);
   }
 

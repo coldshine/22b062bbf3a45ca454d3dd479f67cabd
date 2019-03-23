@@ -1,4 +1,5 @@
 import Config from '../config';
+import Utils from './utils';
 import MainView from './views/main-view';
 import NavigationView from './views/navigation-view';
 import ChartsDataManager from './charts/charts-data-manager';
@@ -47,7 +48,7 @@ class Widget {
     const ratio = 2;
 
     const canvas = document.createElement('canvas');
-    const width = Math.min(Config.layout.canvas.size, document.getElementById('charts').offsetWidth);
+    const width = Utils.calculateLayoutWidth(Config.layout.canvas.size);
     const height = Config.layout.canvas.size;
     const widthScaled = width * ratio;
     const heightScaled = height * ratio;
