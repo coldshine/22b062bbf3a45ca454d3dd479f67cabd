@@ -28,7 +28,7 @@
     "gridTextDark": "#546778",
     "navigationCoverLight": "rgba(234,255,221,0.5)",
     "navigationHandlerLight": "#ddeaf3",
-    "navigationCoverDark": "rgba(0,0,0,0.1)",
+    "navigationCoverDark": "rgba(27,35,46,0.7)",
     "navigationHandlerDark": "#40566b",
     "darkBlue": "#242f3e"
   },

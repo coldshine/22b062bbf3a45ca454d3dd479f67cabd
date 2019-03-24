@@ -6,7 +6,7 @@ class App {
   constructor(data) {
     this.theme = store.getTheme();
     this.themes = Config.themes;
-    this.times = [];
+    // this.times = [];
     this.widgets = [];
     data.forEach((chartData, index) => {
       chartData.index = index;
