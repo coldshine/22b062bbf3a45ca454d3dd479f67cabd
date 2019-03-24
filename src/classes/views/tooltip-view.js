@@ -46,6 +46,7 @@ class Tooltip {
       width = Math.max(width, this.minColumnWidth);
       this.width += width;
     });
+    this.width = Math.max(this.width, 100);
     this.halfWidth = this.width / 2;
     this.columnWidth = this.width / this.chartsDataVisible.length;
   }
@@ -61,23 +62,39 @@ class Tooltip {
       let x = this.position - this.halfWidth;
       x = Math.max(1, x);
       x = Math.min(x, ctx.canvas.offsetWidth - this.width - 1);
+      ctx.save();
       this._drawRect(ctx, x);
+      ctx.restore();
+      ctx.save();
       this._drawText(ctx, x + 10, this.captionX);
+      ctx.restore();
     }
   }
 
   _drawRect(ctx, x) {
-    ctx.save();
+    const y = this.offsetTop;
+    const width = this.width;
+    const height = Config.layout.tooltip.height;
+    const radius = 5;
     ctx.strokeStyle = Config.colors.greyLine;
     ctx.fillStyle = this.background;
     ctx.shadowColor =  this.shadowColor;
+    ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
-    ctx.shadowBlur = 1;
+    ctx.shadowBlur = 10;
+    // ctx.fillRect(x, y, width, height);
     ctx.beginPath();
-    ctx.rect(x, this.offsetTop, this.width, Config.layout.tooltip.height);
-    ctx.stroke();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
     ctx.fill();
-    ctx.restore();
   }
 
   _drawText(ctx, x, captionX) {
@@ -109,27 +126,21 @@ class Tooltip {
   }
 
   _drawDate(ctx, x, y, text) {
-    ctx.save();
     ctx.fillStyle = this.dateTextColor;
     ctx.font = Config.fonts.highlight.fontSize + ' ' + Config.fonts.regular.fontFamily;
     ctx.fillText(text, x, y);
-    ctx.restore();
   }
 
   _drawValue(ctx, x, y, text, color) {
-    ctx.save();
     ctx.fillStyle = color;
     ctx.font = 'bold ' + Config.fonts.highlight.fontSize + ' ' + Config.fonts.regular.fontFamily;
     ctx.fillText(text, x, y);
-    ctx.restore();
   }
 
   _drawChartName(ctx, x, y, text, color) {
-    ctx.save();
     ctx.fillStyle = color;
     ctx.font = Config.fonts.regular.fontSize + ' ' + Config.fonts.regular.fontFamily;
     ctx.fillText(text, x, y);
-    ctx.restore();
   }
 }
 
