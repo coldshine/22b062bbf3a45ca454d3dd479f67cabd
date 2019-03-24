@@ -26,12 +26,12 @@ class App {
 
   draw() {
     this.widgets.forEach((widget) => widget.draw());
-    const now = performance.now();
-    while (this.times.length > 0 && this.times[0] <= now - 1000) {
-      this.times.shift();
-    }
-    this.times.push(now);
-    document.getElementById('fps').innerText = this.times.length;
+    // const now = performance.now();
+    // while (this.times.length > 0 && this.times[0] <= now - 1000) {
+    //  this.times.shift();
+    // }
+    // this.times.push(now);
+    // document.getElementById('fps').innerText = this.times.length;
     window.requestAnimationFrame(() => this.draw());
   }
 

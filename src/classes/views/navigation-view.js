@@ -235,35 +235,16 @@ export default class {
   }
 
   _drawHandler() {
-    this.drawHandlerTopBottom(Config.layout.navigation.offsetTop);
-    this.drawHandlerTopBottom(Config.layout.navigation.offsetTop + Config.layout.navigation.height - 3);
-    this.drawHandlerSide(this.rangeFromPx);
-    this.drawHandlerSide(this.rangeToPx - 5);
-  }
+    const x = this.rangeFromPx;
+    const y = Config.layout.navigation.offsetTop;
+    const width = this.rangeToPx - this.rangeFromPx;
+    const height = Config.layout.navigation.height;
 
-  drawHandlerTopBottom(offsetTop) {
-    const height = 3;
     this.ctx.save();
     this.ctx.fillStyle = this.handlerColor;
-    this.ctx.fillRect(
-      this.rangeFromPx,
-      offsetTop,
-      this.rangeToPx - this.rangeFromPx,
-      height
-    );
-    this.ctx.restore();
-  }
-
-  drawHandlerSide(x) {
-    const width = 5;
-    this.ctx.save();
-    this.ctx.fillStyle = this.handlerColor;
-    this.ctx.fillRect(
-      x,
-      Config.layout.navigation.offsetTop,
-      width,
-      Config.layout.navigation.height
-    );
+    this.ctx.fillRect(x, y, width, height);
+    this.ctx.fillStyle = this.background;
+    this.ctx.fillRect(x + 5, y + 3, width - 10, height - 6);
     this.ctx.restore();
   }
 
