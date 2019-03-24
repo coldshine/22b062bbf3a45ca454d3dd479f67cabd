@@ -228,10 +228,11 @@ export default class {
   }
 
   draw() {
-    this._drawBackground();
+    this.ctx.save();
     this._drawHandler();
     this.charts.forEach((chart) => chart.draw(this.ctx));
     this._drawCover();
+    this.ctx.restore();
   }
 
   _drawHandler() {
@@ -240,12 +241,10 @@ export default class {
     const width = this.rangeToPx - this.rangeFromPx;
     const height = Config.layout.navigation.height;
 
-    this.ctx.save();
     this.ctx.fillStyle = this.handlerColor;
     this.ctx.fillRect(x, y, width, height);
     this.ctx.fillStyle = this.background;
     this.ctx.fillRect(x + 5, y + 3, width - 10, height - 6);
-    this.ctx.restore();
   }
 
   _drawCover() {
@@ -262,7 +261,6 @@ export default class {
   }
 
   drawCoverPart(offsetLeft, width) {
-    this.ctx.save();
     this.ctx.fillStyle = this.coverColor;
     this.ctx.fillRect(
       offsetLeft,
@@ -270,21 +268,7 @@ export default class {
       width,
       Config.layout.navigation.height
     );
-    this.ctx.restore();
   }
-
-  _drawBackground() {
-    this.ctx.save();
-    this.ctx.fillStyle = this.background;
-    this.ctx.fillRect(
-      Config.layout.main.offsetLeft,
-      Config.layout.main.offsetTop + Config.layout.main.height,
-      Config.layout.main.width,
-      this.ctx.canvas.offsetHeight - Config.layout.main.height
-    );
-    this.ctx.restore();
-  }
-
 
   toggleChart(index) {
     this.chartsFactory.toggleChart(index);
